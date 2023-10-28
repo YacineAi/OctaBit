@@ -122,7 +122,7 @@ const onMessage = async (senderId, message) => {
 
                 }
             } else {
-                await createUser({uid: senderId, step: null, token: null, rtoken: null, lastact: null, lastsms: null})
+                await createUser({uid: senderId, step: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
                 .then((data, error) => {
                     botly.sendButtons({
                         id: senderId,
