@@ -416,7 +416,7 @@ const onPostBack = async (senderId, message, postback) => {
                     botly.sendText({id: senderId, text: "تم إرسال الرمز إلى الرقم 💬\nيرجى نسخ الرسالة 📋 أو كتابة الارقام التي وصلتك 🔢"});
                   });
                 } else {
-
+                  console.log(response.data)
                 }
               } else {
                 botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
