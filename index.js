@@ -12,6 +12,9 @@ const botly = new Botly({
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SB_URL, process.env.SB_KEY, { auth: { persistSession: false} });
 
+const twoGb = {"data":{"id":"GIFTWALKWIN","type":"products","meta":{"services":{"steps":10000,"code":"GIFTWALKWIN2GO","id":"WALKWIN"}}}};
+const foreGb = {"data":{"id":"GIFTWALKWIN","type":"products","meta":{"services":{"steps":15000,"code":"GIFTWALKWIN4GO","id":"WALKWIN"}}}};
+const fiveGb = {"data":{"id":"GIFTWALKWIN","type":"products","meta":{"services":{"steps":33570816,"code":"GIFTWALKWIN6GOWEEK","id":"WALKWIN"}}}};
 
 /* ----- ESSENTIALS ----- */
 app.use(express.static("public"));
@@ -26,15 +29,15 @@ function formatBytes(bytes) {
     return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
   }
   
-  app.get("/", (req, res) => {
-    const memoryUsage = process.memoryUsage();
-    let uptimeInSeconds = process.uptime();
+app.get("/", (req, res) => {
+  const memoryUsage = process.memoryUsage();
+  let uptimeInSeconds = process.uptime();
   
-    let uptimeString = "";
-    if (uptimeInSeconds < 60) {
-      uptimeString = `${uptimeInSeconds.toFixed()} seconds`;
-    } else if (uptimeInSeconds < 3600) {
-      uptimeString = `${(uptimeInSeconds / 60).toFixed()} minutes`;
+  let uptimeString = "";
+  if (uptimeInSeconds < 60) {
+    uptimeString = `${uptimeInSeconds.toFixed()} seconds`;
+  } else if (uptimeInSeconds < 3600) {
+    uptimeString = `${(uptimeInSeconds / 60).toFixed()} minutes`;
     } else if (uptimeInSeconds < 86400) {
       uptimeString = `${(uptimeInSeconds / 3600).toFixed()} hours`;
     } else {
@@ -61,7 +64,21 @@ app.post('/webhook', (req, res) => {
   res.sendStatus(200);
 });
 
+app.get('/ping', (req, res) => {
+  res.status(200).json({ message: 'Ping successful' });
+});
 
+function keepAppRunning() {
+  setInterval(() => {
+    https.get(`${process.env.RENDER_EXTERNAL_URL}/ping`, (resp) => {
+      if (resp.statusCode === 200) {
+        console.log('Ping successful');
+      } else {
+        console.error('Ping failed');
+      }
+    });
+  }, 5 * 60 * 1000); // 5 minutes in milliseconds
+}
 
 /* ----- DB Qrs ----- */
 async function createUser(user) {
@@ -105,36 +122,206 @@ async function userDb(userId) {
 /* ----- HANDELS ----- */
 
 const onMessage = async (senderId, message) => {
+  const timeNow = new Date().getTime();
     if (message.message.text) {
-        if (message.message.text.length === 10 && !isNaN(message.message.text) && message.message.text.startsWith("07")) {
-            const user = await userDb(senderId);
-            if (user[0]) {
-                if (user[0].step == null) {
-                    botly.sendButtons({
-                        id: senderId,
-                        text: `هل تؤكد أن (${message.message.text}) هو رقمك 📱؟`,
-                        buttons: [
-                          botly.createPostbackButton("نعم ✅", `num-${message.message.text}`),
-                          botly.createPostbackButton("لا ❎", "rephone")]});
-                } else if (user[0].step == "activated") {
+      const user = await userDb(senderId);
+      if (user[0]) {
+        if (user[0].step == null) {
+          if (message.message.text.length === 10 && !isNaN(message.message.text) && message.message.text.startsWith("07")) {
+            botly.sendButtons({
+              id: senderId,
+              text: `هل تؤكد أن (${message.message.text}) هو رقمك 📱؟`,
+              buttons: [
+                botly.createPostbackButton("نعم ✅", `num-${message.message.text}`),
+                botly.createPostbackButton("لا ❎", "rephone")]});
+          } else {
+            botly.sendText({id: senderId, text: "يرجى إدخال أرقام جيزي فقط !📱"});
+          }
+        } else if (user[0].step == "sms") {
+          if (message.message.text.startsWith("Verification Code")) {
+            const regex = /Verification Code : (\d+)\./;
+            const match = message.message.text.match(regex);
+            if (user[0].lastsms > timeNow) {
+              try {
+                const otp = await axios({
+                  method: "post",
+                  url: "https://apim.djezzy.dz/oauth2/token",
+                  data: `scope=openid&client_secret=MVpXHW_ImuMsxKIwrJpoVVMHjRsa&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&otp=${match[1]}&mobileNumber=213${user[0].num}&grant_type=mobile`,
+                  headers: {
+                      "accept":"*/*",
+                      "accept-encoding":"gzip",
+                      "connection":"Keep-Alive",
+                      "content-length":"149",
+                      "content-type":"application/x-www-form-urlencoded",
+                      "host":"apim.djezzy.dz",
+                      "user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)"
+                  }
+                });
 
-                } else if (user[0].step == "sms") {
+                if (otp.data.access_token != undefined) {
+                  await updateUser(senderId, {step: null , lastsms: null})
+                  .then((data, error) => {
+                    if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                    const headers = {
+                      'Accept-Encoding': 'gzip',
+                      'Authorization': `Bearer ${otp.data.access_token}`,
+                      'Connection': 'Keep-Alive',
+                      'Content-Length': twoGb.length,
+                      //'Content-Type': 'application/json',
+                      'Host': 'apim.djezzy.dz',
+                      'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)'
+                    };
 
+                    axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`, twoGb, { headers })
+                    .then(async (response) => {
+                      await updateUser(senderId, {step: null, lastsms : null})
+                      .then((data, error) => {
+                        if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                        botly.sendButtons({
+                          id: senderId,
+                          text: "تم تفعيل الـ2 جيغا بنجاح 🥳✅\nلا تنسى متابعة مطور الصفحة 😁👇🏻",
+                          buttons: [
+                            botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                          ]});
+                      });
+                    })
+                    .catch(async error => {
+                      if (error.response.status == 429) {
+                        botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                      } else {
+                        await updateUser(senderId, {step: null, lastsms : null})
+                        .then((data, error) => {
+                          if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                          botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
+                        });
+                      }
+                    });
+                  });
+                } else {
+                  console.log("other otp: ", otp.data)
                 }
+              } catch (error) {
+                if (error.response.status == 429) {
+                  botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                } else {
+                  console.log("other err: ", error.response.status)
+                }
+              }
             } else {
-                await createUser({uid: senderId, step: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
+              botly.sendButtons({
+                id: senderId,
+                text: "إنتهى وقت إدخال الرمز 🕜\nيرجى تغيير الرقم أو إعادة ارسال الرمز 📱",
+                buttons: [
+                  botly.createPostbackButton("إرسال رمز 📱", "resend"),
+                  botly.createPostbackButton("إلغاء العملية ❎", "cancel")
+                ]});
+            }
+          } else if (message.message.text.length === 6 && !isNaN(message.message.text)) {
+            if (user[0].lastsms > timeNow) {
+            try {
+              const otp = await axios({
+                method: "post",
+                url: "https://apim.djezzy.dz/oauth2/token",
+                data: `scope=openid&client_secret=MVpXHW_ImuMsxKIwrJpoVVMHjRsa&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&otp=${message.message.text}&mobileNumber=213${user[0].num}&grant_type=mobile`,
+                headers: {
+                    "accept":"*/*",
+                    "accept-encoding":"gzip",
+                    "connection":"Keep-Alive",
+                    "content-length":"149",
+                    "content-type":"application/x-www-form-urlencoded",
+                    "host":"apim.djezzy.dz",
+                    "user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)"
+                }
+              });
+
+              if (otp.data.access_token != undefined) {
+                await updateUser(senderId, {step: null , lastsms: null})
+                  .then((data, error) => {
+                    if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                    const headers = {
+                      'Accept-Encoding': 'gzip',
+                      'Authorization': `Bearer ${otp.data.access_token}`,
+                      'Connection': 'Keep-Alive',
+                      'Content-Length': twoGb.length,
+                      //'Content-Type': 'application/json',
+                      'Host': 'apim.djezzy.dz',
+                      'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)'
+                    };
+
+                    axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`, twoGb, { headers })
+                    .then(async (response) => {
+                      await updateUser(senderId, {step: null, lastsms : null})
+                      .then((data, error) => {
+                        if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                        botly.sendButtons({
+                          id: senderId,
+                          text: "تم تفعيل الـ2 جيغا بنجاح 🥳✅\nلا تنسى متابعة مطور الصفحة 😁👇🏻",
+                          buttons: [
+                            botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                          ]});
+                      });
+                    })
+                    .catch(async error => {
+                      if (error.response.status == 429) {
+                        botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                      } else {
+                        await updateUser(senderId, {step: null, lastsms : null})
+                        .then((data, error) => {
+                          if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                          botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
+                        });
+                      }
+                    });
+                  });
+              } else {
+                console.log("other otp: ", otp.data)
+              }
+            } catch (error) {
+              if (error.response.status == 429) {
+                botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+              } else {
+                console.log("other err: ", error.response.status)
+              }
+            }
+          } else {
+            botly.sendButtons({
+              id: senderId,
+              text: "إنتهى وقت إدخال الرمز 🕜\nيرجى تغيير الرقم أو إعادة ارسال الرمز 📱",
+              buttons: [
+                botly.createPostbackButton("إرسال رمز 📱", "resend"),
+                botly.createPostbackButton("إلغاء العملية ❎", "cancel")
+              ]});
+          }
+          } else {
+            if (user[0].lastsms > timeNow) {
+              botly.sendButtons({
+                id: senderId,
+                text: "يرجى كتابة الرمز المتكون من 6 أرقام الذي وصلك 📱",
+                buttons: [
+                  botly.createPostbackButton("إلغاء العملية ❎", "cancel")
+                ]});
+            } else {
+              botly.sendButtons({
+                id: senderId,
+                text: "إنتهى وقت إدخال الرمز 🕜\nيرجى تغيير الرقم أو إعادة ارسال الرمز 📱",
+                buttons: [
+                  botly.createPostbackButton("إرسال رمز 📱", "resend"),
+                  botly.createPostbackButton("إلغاء العملية ❎", "cancel")
+                ]});
+            }
+          }
+        }
+        } else {
+                await createUser({uid: senderId, step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
                 .then((data, error) => {
                     botly.sendButtons({
                         id: senderId,
                         text: "مرحبا بك 💜\nنوتي بايت هو بوت خاص بالجزائريين فقط 🇩🇿\nيمكنك تفعيل الـ2 جيغا المجانية من جيزي بشكل أسبوعي 😄.\nكل ماعليك هو كتابة رقمك و إتباع الخطوات ✅\nمن فضلك إذا أفادك البوت لا تنسى متابعتي على حسابي 👇🏻",
                         buttons: [
-                          botly.createPostbackButton("حساب المبرمج 💻", "123")
+                          botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                         ]});
                 });
             }
-        } else {
-            botly.sendText({id: senderId, text: "يرجى إدخال أرقام جيزي فقط !📱"});
-        }
       } else if (message.message.attachments[0].payload.sticker_id) {
         botly.sendText({id: senderId, text: "(Y)"});
       } else if (message.message.attachments[0].type == "image" || message.message.attachments[0].type == "audio" || message.message.attachments[0].type == "video") {
@@ -147,32 +334,98 @@ const onPostBack = async (senderId, message, postback) => {
     if (message.postback){ // Normal (buttons)
         if (postback == "GET_STARTED"){
 
-        } else if (postback == "SetMain" || postback == "ChangeLang") {
-        } else if (postback == "SetSub") {
+        } else if (postback == "resend") {
+          const user = await userDb(senderId);
+          if (user[0].step == null) {
+            botly.sendText({id: senderId, text: "عملية غير مقبولة ❗️. يرجى التسجيل بالرقم أولا 📱"});
+          } else {
+            try {
+              const timeNow = new Date().getTime();
+              const user = await userDb(senderId);
+              if (user[0].lastsms == null && user[0].num != null || user[0].lastsms < timeNow && user[0].num != null) {
+                const response = await axios({
+                  method: "post",
+                  url: "https://apim.djezzy.dz/oauth2/registration",
+                  data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + user[0].num,
+                  headers: {
+                      "accept":"*/*",
+                      "accept-encoding":"gzip",
+                      "connection":"Keep-Alive",
+                      "content-length":"71",
+                      "content-type":"application/x-www-form-urlencoded",
+                      "host":"apim.djezzy.dz",
+                      "user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; ASUS_Z01QD Build/N2G48H)"
+                  }
+                });
+                if (response.data.status == 200) {
+                  const smsTimer = new Date().getTime() + 2 * 60 * 1000;
+                  await updateUser(senderId, {step: "sms", lastsms :smsTimer})
+                  .then((data, error) => {
+                    if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                    botly.sendText({id: senderId, text: "تم إرسال الرمز إلى الرقم 💬\nيرجى نسخ الرسالة 📋 أو كتابة الارقام التي وصلتك 🔢"});
+                  });
+                } else {
+
+                }
+              } else {
+                botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
+              }
+            } catch (error) {
+                if (error.response.status == 429) {
+                  botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                } else {
+                  console.log("other err: ", error.response.status)
+                }
+            }
+          }
+        } else if (postback == "cancel") {
+          await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
+                  .then((data, error) => {
+                    if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                    botly.sendText({id: senderId, text: "تم إلغاء كل العمليات"});
+                  });
         } else if (postback == "rephone") {
-            botly.sendText({id: senderId, text: "صحا. ملا عاود ابعث رقم يكون تاعك"});
+            botly.sendText({id: senderId, text: "حسنا. يرجى إدخال رقم آخر 📱"});
         } else if (postback.startsWith("num-")) {
             let num = postback.split("num-");
             let shp = num[1].split("0");
             try {
+              const timeNow = new Date().getTime();
+              const user = await userDb(senderId);
+              if (user[0].lastsms == null || user[0].lastsms < timeNow) {
                 const response = await axios({
-                    method: "post",
-                    url: "https://apim.djezzy.dz/oauth2/registration",
-                    data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + shp[1],
-                    headers: {
-                        "accept":"*/*",
-                        "accept-encoding":"gzip",
-                        "connection":"Keep-Alive",
-                        "content-length":"71",
-                        "content-type":"application/x-www-form-urlencoded",
-                        "host":"apim.djezzy.dz",
-                        "user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; ASUS_Z01QD Build/N2G48H)"
-                    }
+                  method: "post",
+                  url: "https://apim.djezzy.dz/oauth2/registration",
+                  data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + shp[1],
+                  headers: {
+                      "accept":"*/*",
+                      "accept-encoding":"gzip",
+                      "connection":"Keep-Alive",
+                      "content-length":"71",
+                      "content-type":"application/x-www-form-urlencoded",
+                      "host":"apim.djezzy.dz",
+                      "user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; ASUS_Z01QD Build/N2G48H)"
+                  }
+                });
+                if (response.data.status == 200) {
+                  const smsTimer = new Date().getTime() + 2 * 60 * 1000;
+                  await updateUser(senderId, {step: "sms", num: shp[1], lastsms :smsTimer})
+                  .then((data, error) => {
+                    if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                    botly.sendText({id: senderId, text: "تم إرسال الرمز إلى الرقم 💬\nيرجى نسخ الرسالة 📋 أو كتابة الارقام التي وصلتك 🔢"});
                   });
-                  //
-                  botly.sendText({id: senderId, text: "تم إرسال الرمز إلى الرقم 💬\nيرجى نسخ الرسالة 📋 أو كتابة الارقام التي وصلتك 🔢"}); 
+                } else {
+
+                }
+              } else {
+                botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
+              }
             } catch (error) {
-                botly.sendText({id: senderId, text: "خطأ"});
+                if (error.response.status == 429) {
+                  botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                } else {
+                  console.log("other err: ", error.response.status)
+                }
             }
         } 
       } else { // Quick Reply
@@ -184,4 +437,7 @@ const onPostBack = async (senderId, message, postback) => {
       }
 };
 /* ----- HANDELS ----- */
-app.listen(3000, () => console.log(`App is on port : 3000`));
+app.listen(3000, () => {
+  console.log(`App is on port : 3000`);
+  keepAppRunning();
+});
