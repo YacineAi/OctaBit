@@ -405,7 +405,8 @@ const onPostBack = async (senderId, message, postback) => {
                       "content-length":"71",
                       "content-type":"application/x-www-form-urlencoded",
                       "host":"apim.djezzy.dz",
-                      "user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; ASUS_Z01QD Build/N2G48H)"
+                      "user-agent":"Djezzy/2.6.6",
+                      "x-csrf-token":"4GNLKNiKALKSq8js2knrnSkDUmwxFoQ+m74dETJRwigj53iDWo1aF4s4ANUX+TIn/6QaMC634zo0SBulS4+e4OaZEq4OtnDzfzD07OVvBn5tFkzCvv4OYXbymJkUgUYlXtUxjrUWoEEGjLyCyEnyxayBs9Ku5CwKvAmZlsoTS0d2cIabe/f5bzEU25qQ2MlmM/4aPXC2qiasONu7BO/l2EqqUKqGljsubZnnjcSxflv25m/xyir/C6xBTi/csVAIyQeePBvO1Ma8rFPnaerw+wI66FDzKFT6E2Hmjlckl3L/8D8X//5HlsiPqeTSxRBKLZVbOUHT8SjKRbZX/QKRbNEH5TIWO9G4pHsay2cJqbEVrZe1h1VPi953hVsU2MgQPMIo9l/nFIiMDcoYdexRPYRI0TySzSmpk0JVlicD04ZRBL/bV0mSjgLNrHNP62csR2qRcaL8yqp5MSZB1ThM+WOI9jyoW/W9JNnyQIujnwMkLPenWkklf2Dff/TCybE+0w3vmS4ox0qxEQ++0bbsfwkkonu5N9BaGqhAG8hjGR9/jmX40AvLQQZpf/lrplhyyMpB4fy9jqukHeF3IA7ttteWDloe7XrvBx7/LkEbUuqHr794lBln4NxXB4DQ0edtvKXIjHjW73nRwJCKwG3Sv7cGfSNedf180wskTUtdmj8krqdKNTUtF0UK0Bz3z78A6DebkekQ7Jp0e29T9qAWgG/fiLylJt4tMB4nj6YiHtEgEOFAZ8cruEacuieIMDLtgz/9Q1cFyeS14FpbMLikIB1blSGP49h7aL8nzr+gVb2WWF1SMxvigI0x5vyCbL51AI/+YbxMMIDwI54sD1sXV1kv7z312UiCUm05GUQKlPSjyt3v+0jIDVsLpUMKgHN3"
                   },
                   timeout: 3000,
                 });
