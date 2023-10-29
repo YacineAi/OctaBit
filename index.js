@@ -406,7 +406,8 @@ const onPostBack = async (senderId, message, postback) => {
                       "content-type":"application/x-www-form-urlencoded",
                       "host":"apim.djezzy.dz",
                       "user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; ASUS_Z01QD Build/N2G48H)"
-                  }
+                  },
+                  timeout: 3000,
                 });
                 if (response.data.status == 200) {
                   const smsTimer = new Date().getTime() + 2 * 60 * 1000;
