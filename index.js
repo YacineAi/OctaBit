@@ -399,14 +399,14 @@ const onPostBack = async (senderId, message, postback) => {
                   url: "https://apim.djezzy.dz/oauth2/registration",
                   data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + shp[1],
                   headers: {
-                      "accept":"*/*",
-                      "accept-encoding":"gzip",
-                      "connection":"Keep-Alive",
-                      "content-length":"71",
+                     // "accept":"*/*",
+                     // "accept-encoding":"gzip",
+                     // "connection":"Keep-Alive",
+                     // "content-length":"71",
                       "content-type":"application/x-www-form-urlencoded",
-                      "host":"apim.djezzy.dz",
-                      "user-agent":"Djezzy/2.6.6",
-                      "x-csrf-token":""
+                     // "host":"apim.djezzy.dz",
+                     // "user-agent":"Djezzy/2.6.6",
+                     // "x-csrf-token":""
                   },
                   //timeout: 3000,
                 });
