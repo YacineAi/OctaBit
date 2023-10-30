@@ -389,9 +389,7 @@ const onPostBack = async (senderId, message, postback) => {
             botly.sendText({id: senderId, text: "حسنا. يرجى إدخال رقم آخر 📱"});
         } else if (postback.startsWith("num-")) {
             let num = postback.split("num-");
-            let shp = num[1].split("0");
-            console.log("num[1] :", num[1])
-            console.log("1 :", shp[1])
+            let shp = num[1].slice(-9);
             try {
               const timeNow = new Date().getTime();
               const user = await userDb(senderId);
@@ -399,7 +397,7 @@ const onPostBack = async (senderId, message, postback) => {
                 const response = await axios({
                   method: "post",
                   url: "https://apim.djezzy.dz/oauth2/registration",
-                  data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + shp[1],
+                  data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + shp,
                   headers: {
                      // "accept":"*/*",
                      // "accept-encoding":"gzip",
@@ -414,7 +412,7 @@ const onPostBack = async (senderId, message, postback) => {
                 });
                 if (response.data.status == 200) {
                   const smsTimer = new Date().getTime() + 2 * 60 * 1000;
-                  await updateUser(senderId, {step: "sms", num: shp[1], lastsms :smsTimer})
+                  await updateUser(senderId, {step: "sms", num: shp, lastsms :smsTimer})
                   .then((data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                     botly.sendText({id: senderId, text: "تم إرسال الرمز إلى الرقم 💬\nيرجى نسخ الرسالة 📋 أو كتابة الارقام التي وصلتك 🔢"});
