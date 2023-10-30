@@ -390,6 +390,8 @@ const onPostBack = async (senderId, message, postback) => {
         } else if (postback.startsWith("num-")) {
             let num = postback.split("num-");
             let shp = num[1].split("0");
+            console.log("num[1] :", num[1])
+            console.log("1 :", shp[1])
             try {
               const timeNow = new Date().getTime();
               const user = await userDb(senderId);
