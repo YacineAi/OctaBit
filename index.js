@@ -130,13 +130,13 @@ const onMessage = async (senderId, message) => {
         if (user[0].step == null) {
           var numbers = message.message.text.match(/\d+/g);
           if (numbers) {
-            numbers.join('');
-            if (numbers.length === 10 && !isNaN(numbers) && numbers.startsWith("07")) {
+            var numberString = numbers.join('');
+            if (numberString.length === 10 && !isNaN(numberString) && numberString.startsWith("07")) {
               botly.sendButtons({
                 id: senderId,
-                text: `هل تؤكد أن (${numbers}) هو رقمك 📱؟`,
+                text: `هل تؤكد أن (${numberString}) هو رقمك 📱؟`,
                 buttons: [
-                  botly.createPostbackButton("نعم ✅", `num-${numbers}`),
+                  botly.createPostbackButton("نعم ✅", `num-${numberString}`),
                   botly.createPostbackButton("لا ❎", "rephone")]});
             } else {
               botly.sendText({id: senderId, text: "يرجى إدخال أرقام جيزي فقط !📱"});
