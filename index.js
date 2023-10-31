@@ -212,7 +212,7 @@ const onMessage = async (senderId, message) => {
                 if (error.response.status == 429) {
                   botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
                 } else {
-                  console.log("other err: ", error.response.status)
+                  console.log("other err: ", error.response.data)
                 }
               }
             } else {
@@ -288,7 +288,7 @@ const onMessage = async (senderId, message) => {
               if (error.response.status == 429) {
                 botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
               } else {
-                console.log("other err: ", error.response.status)
+                console.log("other err: ", error.response.data)
               }
             }
           } else {
@@ -382,7 +382,7 @@ const onPostBack = async (senderId, message, postback) => {
                 if (error.response.status == 429) {
                   botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
                 } else {
-                  console.log("other err: ", error.response.status)
+                  console.log("other err: ", error.response.data)
                 }
             }
           }
@@ -435,7 +435,7 @@ const onPostBack = async (senderId, message, postback) => {
                 if (error.response.status == 429) {
                   botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
                 } else {
-                  console.log("other err: ", error.response.status)
+                  console.log("other err: ", error.response.data)
                 }
             }
         } 
