@@ -128,12 +128,13 @@ const onMessage = async (senderId, message) => {
       const user = await userDb(senderId);
       if (user[0]) {
         if (user[0].step == null) {
-          if (message.message.text.length === 10 && !isNaN(message.message.text) && message.message.text.startsWith("07")) {
+          const clean = message.message.text.match(/\d+/g).join('');
+          if (clean.length === 10 && !isNaN(clean) && clean.startsWith("07")) {
             botly.sendButtons({
               id: senderId,
-              text: `هل تؤكد أن (${message.message.text}) هو رقمك 📱؟`,
+              text: `هل تؤكد أن (${clean}) هو رقمك 📱؟`,
               buttons: [
-                botly.createPostbackButton("نعم ✅", `num-${message.message.text}`),
+                botly.createPostbackButton("نعم ✅", `num-${clean}`),
                 botly.createPostbackButton("لا ❎", "rephone")]});
           } else {
             botly.sendText({id: senderId, text: "يرجى إدخال أرقام جيزي فقط !📱"});
@@ -164,13 +165,13 @@ const onMessage = async (senderId, message) => {
                   .then((data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                     const headers = {
-                      'Accept-Encoding': 'gzip',
+                      //'Accept-Encoding': 'gzip',
                       'Authorization': `Bearer ${otp.data.access_token}`,
-                      'Connection': 'Keep-Alive',
-                      'Content-Length': twoGb.length,
+                      //'Connection': 'Keep-Alive',
+                      //'Content-Length': twoGb.length,
                       //'Content-Type': 'application/json',
-                      'Host': 'apim.djezzy.dz',
-                      'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)'
+                      //'Host': 'apim.djezzy.dz',
+                      //'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)'
                     };
 
                     axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`, twoGb, { headers })
@@ -190,6 +191,7 @@ const onMessage = async (senderId, message) => {
                       if (error.response.status == 429) {
                         botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
                       } else {
+                        console.log("40x :", error.response.data)
                         await updateUser(senderId, {step: null, lastsms : null})
                         .then((data, error) => {
                           if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
