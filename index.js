@@ -128,14 +128,19 @@ const onMessage = async (senderId, message) => {
       const user = await userDb(senderId);
       if (user[0]) {
         if (user[0].step == null) {
-          const clean = message.message.text.match(/\d+/g).join('');
-          if (clean.length === 10 && !isNaN(clean) && clean.startsWith("07")) {
-            botly.sendButtons({
-              id: senderId,
-              text: `هل تؤكد أن (${clean}) هو رقمك 📱؟`,
-              buttons: [
-                botly.createPostbackButton("نعم ✅", `num-${clean}`),
-                botly.createPostbackButton("لا ❎", "rephone")]});
+          var numbers = message.message.text.match(/\d+/g);
+          if (numbers) {
+            numbers.join('');
+            if (numbers.length === 10 && !isNaN(numbers) && numbers.startsWith("07")) {
+              botly.sendButtons({
+                id: senderId,
+                text: `هل تؤكد أن (${numbers}) هو رقمك 📱؟`,
+                buttons: [
+                  botly.createPostbackButton("نعم ✅", `num-${numbers}`),
+                  botly.createPostbackButton("لا ❎", "rephone")]});
+            } else {
+              botly.sendText({id: senderId, text: "يرجى إدخال أرقام جيزي فقط !📱"});
+            }
           } else {
             botly.sendText({id: senderId, text: "يرجى إدخال أرقام جيزي فقط !📱"});
           }
