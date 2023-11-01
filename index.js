@@ -273,6 +273,7 @@ const onMessage = async (senderId, message) => {
                       if (error.response.status == 429) {
                         botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
                       } else {
+                        console.log("40x :", error.response.data)
                         await updateUser(senderId, {step: null, lastsms : null})
                         .then((data, error) => {
                           if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
