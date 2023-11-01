@@ -248,13 +248,13 @@ const onMessage = async (senderId, message) => {
                   .then((data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                     const headers = {
-                      'Accept-Encoding': 'gzip',
+                      //'Accept-Encoding': 'gzip',
                       'Authorization': `Bearer ${otp.data.access_token}`,
-                      'Connection': 'Keep-Alive',
-                      'Content-Length': twoGb.length,
+                      //'Connection': 'Keep-Alive',
+                      //'Content-Length': twoGb.length,
                       //'Content-Type': 'application/json',
-                      'Host': 'apim.djezzy.dz',
-                      'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)'
+                      //'Host': 'apim.djezzy.dz',
+                      //'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)'
                     };
 
                     axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`, twoGb, { headers })
