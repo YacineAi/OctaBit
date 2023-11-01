@@ -243,6 +243,7 @@ const onMessage = async (senderId, message) => {
               });
 
               if (otp.data.access_token != undefined) {
+                console.log("Token : ", otp.data.access_token)
                 await updateUser(senderId, {step: null , lastsms: null})
                   .then((data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
