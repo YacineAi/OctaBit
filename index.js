@@ -155,13 +155,13 @@ const onMessage = async (senderId, message) => {
                   url: "https://apim.djezzy.dz/oauth2/token",
                   data: `scope=openid&client_secret=MVpXHW_ImuMsxKIwrJpoVVMHjRsa&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&otp=${match[1]}&mobileNumber=213${user[0].num}&grant_type=mobile`,
                   headers: {
-                      "accept":"*/*",
-                      "accept-encoding":"gzip",
-                      "connection":"Keep-Alive",
-                      "content-length":"149",
+                      //"accept":"*/*",
+                      //"accept-encoding":"gzip",
+                      //"connection":"Keep-Alive",
+                      //"content-length":"149",
                       "content-type":"application/x-www-form-urlencoded",
-                      "host":"apim.djezzy.dz",
-                      "user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)"
+                      //"host":"apim.djezzy.dz",
+                      //"user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)"
                   }
                 });
 
@@ -232,13 +232,13 @@ const onMessage = async (senderId, message) => {
                 url: "https://apim.djezzy.dz/oauth2/token",
                 data: `scope=openid&client_secret=MVpXHW_ImuMsxKIwrJpoVVMHjRsa&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&otp=${message.message.text}&mobileNumber=213${user[0].num}&grant_type=mobile`,
                 headers: {
-                    "accept":"*/*",
-                    "accept-encoding":"gzip",
-                    "connection":"Keep-Alive",
-                    "content-length":"149",
+                    //"accept":"*/*",
+                    //"accept-encoding":"gzip",
+                    //"connection":"Keep-Alive",
+                    //"content-length":"149",
                     "content-type":"application/x-www-form-urlencoded",
-                    "host":"apim.djezzy.dz",
-                    "user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)"
+                    //"host":"apim.djezzy.dz",
+                    //"user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)"
                 }
               });
 
