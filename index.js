@@ -195,13 +195,23 @@ const onMessage = async (senderId, message) => {
                     .catch(async error => {
                       if (error.response.status == 429) {
                         botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
-                      } else {
-                        console.log("40x :", error.response.data)
+                      } else if (error.response.status == 401) {
                         await updateUser(senderId, {step: null, lastsms : null})
                         .then((data, error) => {
                           if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                           botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
                         });
+                      } else if (error.response.status == 403) {
+                        await updateUser(senderId, {step: null, lastsms : null})
+                        .then((data, error) => {
+                          if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                          botly.sendText({id: senderId, text: "يرجى إنتظار 30 دقيقة و إعادة المحاولة"});
+                        });
+                      } else if (error.response.status == 404) {
+                        console.log("404 :", error.response.data)
+                      } else if (error.response.status == 444) {
+                      } else {
+                        console.log("40x :", error.response.data)
                       }
                     });
                   });
@@ -273,13 +283,23 @@ const onMessage = async (senderId, message) => {
                     .catch(async error => {
                       if (error.response.status == 429) {
                         botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
-                      } else {
-                        console.log("40x :", error.response.data)
+                      } else if (error.response.status == 401) {
                         await updateUser(senderId, {step: null, lastsms : null})
                         .then((data, error) => {
                           if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                           botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
                         });
+                      } else if (error.response.status == 403) {
+                        await updateUser(senderId, {step: null, lastsms : null})
+                        .then((data, error) => {
+                          if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                          botly.sendText({id: senderId, text: "يرجى إنتظار 30 دقيقة و إعادة المحاولة"});
+                        });
+                      } else if (error.response.status == 404) {
+                        console.log("404 :", error.response.data)
+                      } else if (error.response.status == 444) {
+                      } else {
+                        console.log("40x :", error.response.data)
                       }
                     });
                   });
