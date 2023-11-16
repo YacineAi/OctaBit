@@ -4,11 +4,13 @@ const Botly = require("botly");
 const axios = require("axios");
 const os = require('os');
 const https = require('https');
+const { SocksProxyAgent } = require("socks-proxy-agent");
 const botly = new Botly({
 	accessToken: process.env.PAGE_ACCESS_TOKEN,
 	notificationType: Botly.CONST.REGULAR,
 	FB_URL: "https://graph.facebook.com/v2.6/",
 });
+
 
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SB_URL, process.env.SB_KEY, { auth: { persistSession: false} });
@@ -123,6 +125,15 @@ async function userDb(userId) {
 /* ----- HANDELS ----- */
 
 const onMessage = async (senderId, message) => {
+  let proxies = await axios.get(process.env.ProxyAPI);
+  let types = ["FR"];
+  let filteredArr = proxies.data.filter(function (item) {
+    return types.includes(item.country);
+  });
+  let randomIndex = Math.floor(Math.random() * filteredArr.length);
+  let randomObject = filteredArr[randomIndex];
+  let proxy = "socks5://" + `${randomObject.ip}:${randomObject.port}`;
+  let httpsAgent = new SocksProxyAgent(proxy);
   const timeNow = new Date().getTime();
     if (message.message.text) {
       const user = await userDb(senderId);
@@ -154,34 +165,25 @@ const onMessage = async (senderId, message) => {
                   method: "post",
                   url: "https://apim.djezzy.dz/oauth2/token",
                   data: `scope=openid&client_secret=MVpXHW_ImuMsxKIwrJpoVVMHjRsa&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&otp=${match[1]}&mobileNumber=213${user[0].num}&grant_type=mobile`,
-                  headers: {
-                      //"accept":"*/*",
-                      //"accept-encoding":"gzip",
-                      //"connection":"Keep-Alive",
-                      //"content-length":"149",
-                      "content-type":"application/x-www-form-urlencoded",
-                      //"host":"apim.djezzy.dz",
-                      //"user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)"
-                  }
+                  headers: { "content-type":"application/x-www-form-urlencoded", },
+                  httpsAgent: httpsAgent,
                 });
 
                 if (otp.data.access_token != undefined) {
                   await updateUser(senderId, {step: null , lastsms: null})
-                  .then((data, error) => {
+                  .then(async (data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                    const headers = {
-                      //'Accept-Encoding': 'gzip',
-                      'Authorization': `Bearer ${otp.data.access_token}`,
-                      //'Connection': 'Keep-Alive',
-                      //'Content-Length': twoGb.length,
-                      //'Content-Type': 'application/json',
-                      //'Host': 'apim.djezzy.dz',
-                      //'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)'
-                    };
-
-                    axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`, twoGb, { headers })
-                    .then(async (response) => {
-                      await updateUser(senderId, {step: null, lastsms : null})
+                    const headers = { 'Authorization': `Bearer ${otp.data.access_token}`, };
+                    try {
+                      const succ2Gb = await axios({
+                        method: "post",
+                        url: `https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`,
+                        data: twoGb,
+                        headers: headers,
+                        httpsAgent: httpsAgent,
+                      });
+                      if (succ2Gb.data.status == 200) {
+                        await updateUser(senderId, {step: null, lastsms : null})
                       .then((data, error) => {
                         if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                         botly.sendButtons({
@@ -191,8 +193,10 @@ const onMessage = async (senderId, message) => {
                             botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                           ]});
                       });
-                    })
-                    .catch(async error => {
+                      } else {
+                        // no 200
+                      }
+                    } catch (error) {
                       if (error.response.status == 429) {
                         botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
                       } else if (error.response.status == 401) {
@@ -213,7 +217,7 @@ const onMessage = async (senderId, message) => {
                       } else {
                         console.log("40x :", error.response.data)
                       }
-                    });
+                    }
                   });
                 } else {
                   console.log("other otp: ", otp.data)
@@ -241,35 +245,26 @@ const onMessage = async (senderId, message) => {
                 method: "post",
                 url: "https://apim.djezzy.dz/oauth2/token",
                 data: `scope=openid&client_secret=MVpXHW_ImuMsxKIwrJpoVVMHjRsa&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&otp=${message.message.text}&mobileNumber=213${user[0].num}&grant_type=mobile`,
-                headers: {
-                    //"accept":"*/*",
-                    //"accept-encoding":"gzip",
-                    //"connection":"Keep-Alive",
-                    //"content-length":"149",
-                    "content-type":"application/x-www-form-urlencoded",
-                    //"host":"apim.djezzy.dz",
-                    //"user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)"
-                }
+                headers: { "content-type":"application/x-www-form-urlencoded", },
+                httpsAgent: httpsAgent,
               });
 
               if (otp.data.access_token != undefined) {
                 console.log("Token : ", otp.data.access_token)
                 await updateUser(senderId, {step: null , lastsms: null})
-                  .then((data, error) => {
+                  .then(async (data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                    const headers = {
-                      //'Accept-Encoding': 'gzip',
-                      'Authorization': `Bearer ${otp.data.access_token}`,
-                      //'Connection': 'Keep-Alive',
-                      //'Content-Length': twoGb.length,
-                      //'Content-Type': 'application/json',
-                      //'Host': 'apim.djezzy.dz',
-                      //'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)'
-                    };
-
-                    axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`, twoGb, { headers })
-                    .then(async (response) => {
-                      await updateUser(senderId, {step: null, lastsms : null})
+                    const headers = { 'Authorization': `Bearer ${otp.data.access_token}`, };
+                    try {
+                      const succ2Gb = await axios({
+                        method: "post",
+                        url: `https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`,
+                        data: twoGb,
+                        headers: headers,
+                        httpsAgent: httpsAgent,
+                      });
+                      if (succ2Gb.data.status == 200) {
+                        await updateUser(senderId, {step: null, lastsms : null})
                       .then((data, error) => {
                         if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                         botly.sendButtons({
@@ -279,8 +274,10 @@ const onMessage = async (senderId, message) => {
                             botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                           ]});
                       });
-                    })
-                    .catch(async error => {
+                      } else {
+                        // no 200
+                      }
+                    } catch (error) {
                       if (error.response.status == 429) {
                         botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
                       } else if (error.response.status == 401) {
@@ -301,7 +298,7 @@ const onMessage = async (senderId, message) => {
                       } else {
                         console.log("40x :", error.response.data)
                       }
-                    });
+                    }
                   });
               } else {
                 console.log("other otp: ", otp.data)
@@ -361,6 +358,15 @@ const onMessage = async (senderId, message) => {
 /* ----- POSTBACK ----- */
 
 const onPostBack = async (senderId, message, postback) => {
+  let proxies = await axios.get(process.env.ProxyAPI);
+  let types = ["FR"];
+  let filteredArr = proxies.data.filter(function (item) {
+    return types.includes(item.country);
+  });
+  let randomIndex = Math.floor(Math.random() * filteredArr.length);
+  let randomObject = filteredArr[randomIndex];
+  let proxy = "socks5://" + `${randomObject.ip}:${randomObject.port}`;
+  let httpsAgent = new SocksProxyAgent(proxy);
     if (message.postback){ // Normal (buttons)
         if (postback == "GET_STARTED"){
 
@@ -385,7 +391,8 @@ const onPostBack = async (senderId, message, postback) => {
                       "content-type":"application/x-www-form-urlencoded",
                       "host":"apim.djezzy.dz",
                       "user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; ASUS_Z01QD Build/N2G48H)"
-                  }
+                  },
+                  httpsAgent: httpsAgent,
                 });
                 if (response.data.status == 200) {
                   const smsTimer = new Date().getTime() + 2 * 60 * 1000;
