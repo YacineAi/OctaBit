@@ -384,13 +384,7 @@ const onPostBack = async (senderId, message, postback) => {
                   url: "https://apim.djezzy.dz/oauth2/registration",
                   data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + user[0].num,
                   headers: {
-                      "accept":"*/*",
-                      "accept-encoding":"gzip",
-                      "connection":"Keep-Alive",
-                      "content-length":"71",
                       "content-type":"application/x-www-form-urlencoded",
-                      "host":"apim.djezzy.dz",
-                      "user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; ASUS_Z01QD Build/N2G48H)"
                   },
                   httpsAgent: httpsAgent,
                 });
@@ -435,15 +429,9 @@ const onPostBack = async (senderId, message, postback) => {
                   url: "https://apim.djezzy.dz/oauth2/registration",
                   data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + shp,
                   headers: {
-                     // "accept":"*/*",
-                     // "accept-encoding":"gzip",
-                     // "connection":"Keep-Alive",
-                     // "content-length":"71",
                       "content-type":"application/x-www-form-urlencoded",
-                     // "host":"apim.djezzy.dz",
-                     // "user-agent":"Djezzy/2.6.6",
-                     // "x-csrf-token":""
                   },
+		  httpsAgent: httpsAgent,
                   //timeout: 3000,
                 });
                 if (response.data.status == 200) {
