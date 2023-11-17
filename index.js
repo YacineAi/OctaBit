@@ -412,6 +412,8 @@ const onPostBack = async (senderId, message, postback) => {
                   reget();
                 } else {
                   console.log("other err: ", error.response.data)
+                  console.log("Proxy fail Retrying...")
+                  reget();
                 }
             }
           }
@@ -469,10 +471,10 @@ const onPostBack = async (senderId, message, postback) => {
                 if (error.response.status == 429) {
                   botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
                 } else if (error.message == "Proxy connection timed out") {
+                  
+                } else {
                   console.log("Proxy fail Retrying...")
                   reget();
-                } else {
-                  console.log("other err: ", error.response.data)
                 }
             }
         } 
