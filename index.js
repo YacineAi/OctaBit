@@ -133,7 +133,7 @@ const onMessage = async (senderId, message) => {
   let randomIndex = Math.floor(Math.random() * filteredArr.length);
   let randomObject = filteredArr[randomIndex];
   let proxy = "socks5://" + `${randomObject.ip}:${randomObject.port}`;
-  let httpsAgent = new SocksProxyAgent(proxy);
+  let httpsAgent = new SocksProxyAgent(proxy, { timeout: 5000 });
   const timeNow = new Date().getTime();
     if (message.message.text) {
       const user = await userDb(senderId);
@@ -358,15 +358,6 @@ const onMessage = async (senderId, message) => {
 /* ----- POSTBACK ----- */
 
 const onPostBack = async (senderId, message, postback) => {
-  let proxies = await axios.get(process.env.ProxyAPI);
-  let types = ["FR"];
-  let filteredArr = proxies.data.filter(function (item) {
-    return types.includes(item.country);
-  });
-  let randomIndex = Math.floor(Math.random() * filteredArr.length);
-  let randomObject = filteredArr[randomIndex];
-  let proxy = "socks5://" + `${randomObject.ip}:${randomObject.port}`;
-  let httpsAgent = new SocksProxyAgent(proxy);
     if (message.postback){ // Normal (buttons)
         if (postback == "GET_STARTED"){
 
@@ -376,9 +367,19 @@ const onPostBack = async (senderId, message, postback) => {
             botly.sendText({id: senderId, text: "عملية غير مقبولة ❗️. يرجى التسجيل بالرقم أولا 📱"});
           } else {
             try {
-              const timeNow = new Date().getTime();
-              const user = await userDb(senderId);
-              if (user[0].lastsms == null && user[0].num != null || user[0].lastsms < timeNow && user[0].num != null) {
+              var reget = async function () {
+                let proxies = await axios.get(process.env.ProxyAPI);
+                let types = ["FR"];
+                let filteredArr = proxies.data.filter(function (item) {
+                  return types.includes(item.country);
+                });
+                let randomIndex = Math.floor(Math.random() * filteredArr.length);
+                let randomObject = filteredArr[randomIndex];
+                let proxy = "socks5://" + `${randomObject.ip}:${randomObject.port}`;
+                let httpsAgent = new SocksProxyAgent(proxy, { timeout: 5000 });
+                const timeNow = new Date().getTime();
+                const user = await userDb(senderId);
+                if (user[0].lastsms == null && user[0].num != null || user[0].lastsms < timeNow && user[0].num != null) {
                 const response = await axios({
                   method: "post",
                   url: "https://apim.djezzy.dz/oauth2/registration",
@@ -401,9 +402,14 @@ const onPostBack = async (senderId, message, postback) => {
               } else {
                 botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
               }
+              }
+              reget();
             } catch (error) {
                 if (error.response.status == 429) {
                   botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                } else if (error.message == "Proxy connection timed out") {
+                  console.log("Proxy fail Retrying...")
+                  reget();
                 } else {
                   console.log("other err: ", error.response.data)
                 }
@@ -421,18 +427,27 @@ const onPostBack = async (senderId, message, postback) => {
             let num = postback.split("num-");
             let shp = num[1].slice(-9);
             try {
-              const timeNow = new Date().getTime();
-              const user = await userDb(senderId);
-              if (user[0].lastsms == null || user[0].lastsms < timeNow) {
-                const response = await axios({
+              var reget = async function () {
+                let proxies = await axios.get(process.env.ProxyAPI);
+                let types = ["FR"];
+                let filteredArr = proxies.data.filter(function (item) {
+                  return types.includes(item.country);
+                });
+                let randomIndex = Math.floor(Math.random() * filteredArr.length);
+                let randomObject = filteredArr[randomIndex];
+                let proxy = "socks5://" + `${randomObject.ip}:${randomObject.port}`;
+                let httpsAgent = new SocksProxyAgent(proxy, { timeout: 5000 });
+                const timeNow = new Date().getTime();
+                const user = await userDb(senderId);
+                if (user[0].lastsms == null || user[0].lastsms < timeNow) {
+                  const response = await axios({
                   method: "post",
                   url: "https://apim.djezzy.dz/oauth2/registration",
                   data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + shp,
                   headers: {
                       "content-type":"application/x-www-form-urlencoded",
                   },
-		  httpsAgent: httpsAgent,
-                  //timeout: 3000,
+                  httpsAgent: httpsAgent,
                 });
                 if (response.data.status == 200) {
                   const smsTimer = new Date().getTime() + 2 * 60 * 1000;
@@ -447,10 +462,15 @@ const onPostBack = async (senderId, message, postback) => {
               } else {
                 botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
               }
+              };
+              reget();
             } catch (error) {
               console.log(error)
                 if (error.response.status == 429) {
                   botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                } else if (error.message == "Proxy connection timed out") {
+                  console.log("Proxy fail Retrying...")
+                  reget();
                 } else {
                   console.log("other err: ", error.response.data)
                 }
