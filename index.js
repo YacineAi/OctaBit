@@ -366,8 +366,8 @@ const onPostBack = async (senderId, message, postback) => {
           if (user[0].step == null) {
             botly.sendText({id: senderId, text: "عملية غير مقبولة ❗️. يرجى التسجيل بالرقم أولا 📱"});
           } else {
-            try {
               var reget = async function () {
+                try {
                 let proxies = await axios.get(process.env.ProxyAPI);
                 let types = ["FR"];
                 let filteredArr = proxies.data.filter(function (item) {
@@ -402,20 +402,18 @@ const onPostBack = async (senderId, message, postback) => {
               } else {
                 botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
               }
+            } catch (error) {
+              if (error.response.status == 429) {
+                botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+              } else if (error.message == "Proxy connection timed out") {
+                console.log("Proxy fail Retrying...")
+                reget();
+              } else {
+                console.log("other err: ", error.response.data)
+              }
+          }
               }
               reget();
-            } catch (error) {
-                if (error.response.status == 429) {
-                  botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
-                } else if (error.message == "Proxy connection timed out") {
-                  console.log("Proxy fail Retrying...")
-                  reget();
-                } else {
-                  console.log("other err: ", error.response.data)
-                  console.log("Proxy fail Retrying...")
-                  reget();
-                }
-            }
           }
         } else if (postback == "cancel") {
           await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
@@ -428,8 +426,8 @@ const onPostBack = async (senderId, message, postback) => {
         } else if (postback.startsWith("num-")) {
             let num = postback.split("num-");
             let shp = num[1].slice(-9);
-            try {
               var reget = async function () {
+                try {
                 let proxies = await axios.get(process.env.ProxyAPI);
                 let types = ["FR"];
                 let filteredArr = proxies.data.filter(function (item) {
@@ -464,19 +462,20 @@ const onPostBack = async (senderId, message, postback) => {
               } else {
                 botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
               }
-              };
-              reget();
-            } catch (error) {
+              } catch (error) {
               console.log(error)
                 if (error.response.status == 429) {
                   botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
                 } else if (error.message == "Proxy connection timed out") {
-                  
-                } else {
                   console.log("Proxy fail Retrying...")
                   reget();
+                } else {
+                  console.log("other err: ", error.response.data)
                 }
             }
+              };
+              reget();
+            
         } 
       } else { // Quick Reply
         if (message.message.text == "tbs") {
