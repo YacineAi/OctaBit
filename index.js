@@ -125,6 +125,7 @@ async function userDb(userId) {
 /* ----- HANDELS ----- */
 
 const onMessage = async (senderId, message) => {
+	/*
   let proxies = await axios.get(process.env.ProxyAPI);
   let types = ["FR"];
   let filteredArr = proxies.data.filter(function (item) {
@@ -133,7 +134,8 @@ const onMessage = async (senderId, message) => {
   let randomIndex = Math.floor(Math.random() * filteredArr.length);
   let randomObject = filteredArr[randomIndex];
   let proxy = "socks5://" + `${randomObject.ip}:${randomObject.port}`;
-  let httpsAgent = new SocksProxyAgent(proxy, { timeout: 5000 });
+	*/
+  let httpsAgent = new SocksProxyAgent(process.env.PROXY, { timeout: 5000 });
   const timeNow = new Date().getTime();
     if (message.message.text) {
       const user = await userDb(senderId);
@@ -376,7 +378,7 @@ const onPostBack = async (senderId, message, postback) => {
                 let randomIndex = Math.floor(Math.random() * filteredArr.length);
                 let randomObject = filteredArr[randomIndex];
                 let proxy = "socks5://" + `${randomObject.ip}:${randomObject.port}`;
-                let httpsAgent = new SocksProxyAgent(proxy, { timeout: 5000 });
+                let httpsAgent = new SocksProxyAgent(process.env.PROXY, { timeout: 5000 });
                 const timeNow = new Date().getTime();
                 const user = await userDb(senderId);
                 if (user[0].lastsms == null && user[0].num != null || user[0].lastsms < timeNow && user[0].num != null) {
@@ -444,7 +446,7 @@ const onPostBack = async (senderId, message, postback) => {
                 let randomIndex = Math.floor(Math.random() * filteredArr.length);
                 let randomObject = filteredArr[randomIndex];
                 let proxy = "socks5://" + `${randomObject.ip}:${randomObject.port}`;
-                let httpsAgent = new SocksProxyAgent(proxy, { timeout: 5000 });
+                let httpsAgent = new SocksProxyAgent(process.env.PROXY, { timeout: 5000 });
                 const timeNow = new Date().getTime();
                 const user = await userDb(senderId);
                 if (user[0].lastsms == null || user[0].lastsms < timeNow) {
