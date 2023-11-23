@@ -405,7 +405,7 @@ const onPostBack = async (senderId, message, postback) => {
             } catch (error) {
               if (error.response.status == 429) {
                 botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
-              } else if (error.code === 'ECONNRESET' || error.code === 'ETIMEOUT') {
+              } else if (error.code == 'ETIMEOUT') {
                 console.log("Proxy fail Retrying...")
                 reget();
               } else {
@@ -463,10 +463,10 @@ const onPostBack = async (senderId, message, postback) => {
                 botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
               }
               } catch (error) {
-              console.log(error)
+              console.log(error.code)
                 if (error.response.status == 429) {
                   botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
-                } else if (error.code === 'ECONNRESET' || error.code === 'ETIMEDOUT') {
+                } else if (error.code == 'ETIMEOUT') {
                   console.log("Proxy fail Retrying...")
                   reget();
                 } else {
