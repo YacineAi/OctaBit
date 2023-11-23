@@ -5,12 +5,12 @@ const axios = require("axios");
 const os = require('os');
 const https = require('https');
 const { SocksProxyAgent } = require("socks-proxy-agent");
+const httpsAgent = new SocksProxyAgent(process.env.PROXY);
 const botly = new Botly({
 	accessToken: process.env.PAGE_ACCESS_TOKEN,
 	notificationType: Botly.CONST.REGULAR,
 	FB_URL: "https://graph.facebook.com/v2.6/",
 });
-
 
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SB_URL, process.env.SB_KEY, { auth: { persistSession: false} });
@@ -125,17 +125,6 @@ async function userDb(userId) {
 /* ----- HANDELS ----- */
 
 const onMessage = async (senderId, message) => {
-	/*
-  let proxies = await axios.get(process.env.ProxyAPI);
-  let types = ["FR"];
-  let filteredArr = proxies.data.filter(function (item) {
-    return types.includes(item.country);
-  });
-  let randomIndex = Math.floor(Math.random() * filteredArr.length);
-  let randomObject = filteredArr[randomIndex];
-  let proxy = "socks5://" + `${randomObject.ip}:${randomObject.port}`;
-	*/
-  let httpsAgent = new SocksProxyAgent(process.env.PROXY, { timeout: 5000 });
   const timeNow = new Date().getTime();
     if (message.message.text) {
       const user = await userDb(senderId);
@@ -167,25 +156,20 @@ const onMessage = async (senderId, message) => {
                   method: "post",
                   url: "https://apim.djezzy.dz/oauth2/token",
                   data: `scope=openid&client_secret=MVpXHW_ImuMsxKIwrJpoVVMHjRsa&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&otp=${match[1]}&mobileNumber=213${user[0].num}&grant_type=mobile`,
-                  headers: { "content-type":"application/x-www-form-urlencoded", },
+                  headers: { "content-type":"application/x-www-form-urlencoded" },
                   httpsAgent: httpsAgent,
                 });
 
                 if (otp.data.access_token != undefined) {
                   await updateUser(senderId, {step: null , lastsms: null})
-                  .then(async (data, error) => {
+                  .then((data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                    const headers = { 'Authorization': `Bearer ${otp.data.access_token}`, };
-                    try {
-                      const succ2Gb = await axios({
-                        method: "post",
-                        url: `https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`,
-                        data: twoGb,
-                        headers: headers,
-                        httpsAgent: httpsAgent,
-                      });
-                      if (succ2Gb.data.status == 200) {
-                        await updateUser(senderId, {step: null, lastsms : null})
+                    const headers = { 'Authorization': `Bearer ${otp.data.access_token}` };
+
+                    axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`, twoGb, { headers ,
+                    httpsAgent: httpsAgent })
+                    .then(async (response) => {
+                      await updateUser(senderId, {step: null, lastsms : null})
                       .then((data, error) => {
                         if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                         botly.sendButtons({
@@ -195,10 +179,8 @@ const onMessage = async (senderId, message) => {
                             botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                           ]});
                       });
-                      } else {
-                        // no 200
-                      }
-                    } catch (error) {
+                    })
+                    .catch(async error => {
                       if (error.response.status == 429) {
                         botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
                       } else if (error.response.status == 401) {
@@ -219,7 +201,7 @@ const onMessage = async (senderId, message) => {
                       } else {
                         console.log("40x :", error.response.data)
                       }
-                    }
+                    });
                   });
                 } else {
                   console.log("other otp: ", otp.data)
@@ -247,26 +229,29 @@ const onMessage = async (senderId, message) => {
                 method: "post",
                 url: "https://apim.djezzy.dz/oauth2/token",
                 data: `scope=openid&client_secret=MVpXHW_ImuMsxKIwrJpoVVMHjRsa&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&otp=${message.message.text}&mobileNumber=213${user[0].num}&grant_type=mobile`,
-                headers: { "content-type":"application/x-www-form-urlencoded", },
+                headers: { "content-type":"application/x-www-form-urlencoded" },
                 httpsAgent: httpsAgent,
               });
 
               if (otp.data.access_token != undefined) {
                 console.log("Token : ", otp.data.access_token)
                 await updateUser(senderId, {step: null , lastsms: null})
-                  .then(async (data, error) => {
+                  .then((data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                    const headers = { 'Authorization': `Bearer ${otp.data.access_token}`, };
-                    try {
-                      const succ2Gb = await axios({
-                        method: "post",
-                        url: `https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`,
-                        data: twoGb,
-                        headers: headers,
-                        httpsAgent: httpsAgent,
-                      });
-                      if (succ2Gb.data.status == 200) {
-                        await updateUser(senderId, {step: null, lastsms : null})
+                    const headers = {
+                      //'Accept-Encoding': 'gzip',
+                      'Authorization': `Bearer ${otp.data.access_token}`,
+                      //'Connection': 'Keep-Alive',
+                      //'Content-Length': twoGb.length,
+                      //'Content-Type': 'application/json',
+                      //'Host': 'apim.djezzy.dz',
+                      //'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G965N Build/QP1A.190711.020)'
+                    };
+
+                    axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`, twoGb, { headers,
+                    httpsAgent: httpsAgent })
+                    .then(async (response) => {
+                      await updateUser(senderId, {step: null, lastsms : null})
                       .then((data, error) => {
                         if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                         botly.sendButtons({
@@ -276,10 +261,8 @@ const onMessage = async (senderId, message) => {
                             botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                           ]});
                       });
-                      } else {
-                        // no 200
-                      }
-                    } catch (error) {
+                    })
+                    .catch(async error => {
                       if (error.response.status == 429) {
                         botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
                       } else if (error.response.status == 401) {
@@ -300,7 +283,7 @@ const onMessage = async (senderId, message) => {
                       } else {
                         console.log("40x :", error.response.data)
                       }
-                    }
+                    });
                   });
               } else {
                 console.log("other otp: ", otp.data)
@@ -368,26 +351,22 @@ const onPostBack = async (senderId, message, postback) => {
           if (user[0].step == null) {
             botly.sendText({id: senderId, text: "عملية غير مقبولة ❗️. يرجى التسجيل بالرقم أولا 📱"});
           } else {
-              var reget = async function () {
-                try {
-                let proxies = await axios.get(process.env.ProxyAPI);
-                let types = ["FR"];
-                let filteredArr = proxies.data.filter(function (item) {
-                  return types.includes(item.country);
-                });
-                let randomIndex = Math.floor(Math.random() * filteredArr.length);
-                let randomObject = filteredArr[randomIndex];
-                let proxy = "socks5://" + `${randomObject.ip}:${randomObject.port}`;
-                let httpsAgent = new SocksProxyAgent(process.env.PROXY, { timeout: 5000 });
-                const timeNow = new Date().getTime();
-                const user = await userDb(senderId);
-                if (user[0].lastsms == null && user[0].num != null || user[0].lastsms < timeNow && user[0].num != null) {
+            try {
+              const timeNow = new Date().getTime();
+              const user = await userDb(senderId);
+              if (user[0].lastsms == null && user[0].num != null || user[0].lastsms < timeNow && user[0].num != null) {
                 const response = await axios({
                   method: "post",
                   url: "https://apim.djezzy.dz/oauth2/registration",
                   data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + user[0].num,
                   headers: {
+                      "accept":"*/*",
+                      "accept-encoding":"gzip",
+                      "connection":"Keep-Alive",
+                      "content-length":"71",
                       "content-type":"application/x-www-form-urlencoded",
+                      "host":"apim.djezzy.dz",
+                      "user-agent":"Dalvik/2.1.0 (Linux; U; Android 7.1.2; ASUS_Z01QD Build/N2G48H)"
                   },
                   httpsAgent: httpsAgent,
                 });
@@ -405,26 +384,13 @@ const onPostBack = async (senderId, message, postback) => {
                 botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
               }
             } catch (error) {
-              console.log("err code: ", error.code)
-              console.log("err response: ", error.response)
-              if (error.code) {
-                if (error.code == "ETIMEOUT") {
-                  console.log("Proxy fail Retrying...")
-                  reget();
-                } else {
-                  console.log("other err code: ", error.code)
-                }
-              } else if (error.response) {
                 if (error.response.status == 429) {
                   botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
                 } else {
-                  console.log("other err response: ", error.response.data)
+                  console.log("other err: ", error.response.data)
                 }
-              }
             }
           }
-          reget();
-        }
         } else if (postback == "cancel") {
           await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
                   .then((data, error) => {
@@ -436,26 +402,23 @@ const onPostBack = async (senderId, message, postback) => {
         } else if (postback.startsWith("num-")) {
             let num = postback.split("num-");
             let shp = num[1].slice(-9);
-              var reget = async function () {
-                try {
-                let proxies = await axios.get(process.env.ProxyAPI);
-                let types = ["FR"];
-                let filteredArr = proxies.data.filter(function (item) {
-                  return types.includes(item.country);
-                });
-                let randomIndex = Math.floor(Math.random() * filteredArr.length);
-                let randomObject = filteredArr[randomIndex];
-                let proxy = "socks5://" + `${randomObject.ip}:${randomObject.port}`;
-                let httpsAgent = new SocksProxyAgent(process.env.PROXY, { timeout: 5000 });
-                const timeNow = new Date().getTime();
-                const user = await userDb(senderId);
-                if (user[0].lastsms == null || user[0].lastsms < timeNow) {
-                  const response = await axios({
+            try {
+              const timeNow = new Date().getTime();
+              const user = await userDb(senderId);
+              if (user[0].lastsms == null || user[0].lastsms < timeNow) {
+                const response = await axios({
                   method: "post",
                   url: "https://apim.djezzy.dz/oauth2/registration",
                   data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + shp,
                   headers: {
+                     // "accept":"*/*",
+                     // "accept-encoding":"gzip",
+                     // "connection":"Keep-Alive",
+                     // "content-length":"71",
                       "content-type":"application/x-www-form-urlencoded",
+                     // "host":"apim.djezzy.dz",
+                     // "user-agent":"Djezzy/2.6.6",
+                     // "x-csrf-token":""
                   },
                   httpsAgent: httpsAgent,
                 });
@@ -472,26 +435,14 @@ const onPostBack = async (senderId, message, postback) => {
               } else {
                 botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
               }
-              } catch (error) {
-                console.log("err code: ", error.code)
-                console.log("err response: ", error.response)
-                if (error.code) {
-                  if (error.code == "ETIMEOUT") {
-                    console.log("Proxy fail Retrying...")
-                    reget();
-                  } else {
-                    console.log("other err code: ", error.code)
-                  }
-                } else if (error.response) {
-                  if (error.response.status == 429) {
-                    botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
-                  } else {
-                    console.log("other err response: ", error.response.data)
-                  }
+            } catch (error) {
+              console.log(error)
+                if (error.response.status == 429) {
+                  botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                } else {
+                  console.log("other err: ", error.response.data)
                 }
-              }
-              };
-              reget(); 
+            }
         } 
       } else { // Quick Reply
         if (message.message.text == "tbs") {
