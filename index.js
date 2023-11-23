@@ -403,18 +403,26 @@ const onPostBack = async (senderId, message, postback) => {
                 botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
               }
             } catch (error) {
-              if (error.response.status == 429) {
-                botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
-              } else if (error.code == 'ETIMEOUT') {
-                console.log("Proxy fail Retrying...")
-                reget();
-              } else {
-                console.log("other err: ", error.response.data)
+              console.log("err code: ", error.code)
+              console.log("err response: ", error.response.status)
+              if (error.code) {
+                if (error.code == "ETIMEOUT") {
+                  console.log("Proxy fail Retrying...")
+                  reget();
+                } else {
+                  console.log("other err code: ", error.code)
+                }
+              } else if (error.response) {
+                if (error.response.status == 429) {
+                  botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                } else {
+                  console.log("other err response: ", error.response.data)
+                }
               }
+            }
           }
-              }
-              reget();
-          }
+          reget();
+        }
         } else if (postback == "cancel") {
           await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
                   .then((data, error) => {
@@ -463,19 +471,25 @@ const onPostBack = async (senderId, message, postback) => {
                 botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
               }
               } catch (error) {
-              console.log(error.code)
-                if (error.response.status == 429) {
-                  botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
-                } else if (error.code == 'ETIMEOUT') {
-                  console.log("Proxy fail Retrying...")
-                  reget();
-                } else {
-                  console.log("other err: ", error.response.data)
+                console.log("err code: ", error.code)
+                console.log("err response: ", error.response.status)
+                if (error.code) {
+                  if (error.code == "ETIMEOUT") {
+                    console.log("Proxy fail Retrying...")
+                    reget();
+                  } else {
+                    console.log("other err code: ", error.code)
+                  }
+                } else if (error.response) {
+                  if (error.response.status == 429) {
+                    botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                  } else {
+                    console.log("other err response: ", error.response.data)
+                  }
                 }
-            }
+              }
               };
-              reget();
-            
+              reget(); 
         } 
       } else { // Quick Reply
         if (message.message.text == "tbs") {
