@@ -405,7 +405,7 @@ const onPostBack = async (senderId, message, postback) => {
             } catch (error) {
               if (error.response.status == 429) {
                 botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
-              } else if (error.message == "Proxy connection timed out") {
+              } else if (error.code === 'ECONNRESET' || error.code === 'ETIMEDOUT') {
                 console.log("Proxy fail Retrying...")
                 reget();
               } else {
@@ -466,7 +466,7 @@ const onPostBack = async (senderId, message, postback) => {
               console.log(error)
                 if (error.response.status == 429) {
                   botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
-                } else if (error.message == "Proxy connection timed out") {
+                } else if (error.code === 'ECONNRESET' || error.code === 'ETIMEDOUT') {
                   console.log("Proxy fail Retrying...")
                   reget();
                 } else {
