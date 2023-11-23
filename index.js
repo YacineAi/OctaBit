@@ -404,7 +404,7 @@ const onPostBack = async (senderId, message, postback) => {
               }
             } catch (error) {
               console.log("err code: ", error.code)
-              console.log("err response: ", error.response.status)
+              console.log("err response: ", error.response)
               if (error.code) {
                 if (error.code == "ETIMEOUT") {
                   console.log("Proxy fail Retrying...")
@@ -472,7 +472,7 @@ const onPostBack = async (senderId, message, postback) => {
               }
               } catch (error) {
                 console.log("err code: ", error.code)
-                console.log("err response: ", error.response.status)
+                console.log("err response: ", error.response)
                 if (error.code) {
                   if (error.code == "ETIMEOUT") {
                     console.log("Proxy fail Retrying...")
