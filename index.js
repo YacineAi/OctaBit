@@ -173,6 +173,8 @@ function keepAppRunning() {
             axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user.num}/subscription-product?include=`, twoGb, { headers ,
             httpsAgent: httpsAgent })
             .then(async (response) => {
+              console.log("code : ", response.status);
+              console.log("data : ", response.data);
               botly.sendButtons({
                 id: user.uid,
                 text: `المستعمل برقم : ${hiddenNum}\nتم تفعيل 2 جيغا بنجاح ✅🥳\nلا تنسى متابعة المطور 👇🏻 لدعم الصفحة 💜`,
@@ -198,8 +200,8 @@ function keepAppRunning() {
                 console.log("40x :", error.response.data)
               }
             });
-                });
           });
+        });
         } else {
           console.log("No Queue...")
         }
