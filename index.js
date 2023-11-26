@@ -182,7 +182,7 @@ function keepAppRunning() {
             })
             .catch(async error => {
               if (error.response.status == 429) {
-                botly.sendText({id: user.uid, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                botly.sendText({id: user.uid, text: "4️⃣2️⃣9️⃣❗\nتمهل قليلا 😐 تم إجراء الكثير من الطلبات 📲 حاول بعد دقائق من فضلك."});
               } else if (error.response.status == 401) {
                 await updateUser(user.uid, {step: null, lastsms : null})
                 .then((data, error) => {
