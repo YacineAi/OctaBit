@@ -160,7 +160,7 @@ function keepAppRunning() {
             httpsAgent: httpsAgent })
             .then(async (response) => {
               botly.sendButtons({
-                id: senderId,
+                id: user.uid,
                 text: `المستعمل برقم : ${hiddenNum}\nتم تفعيل 2 جيغا بنجاح ✅🥳\nلا تنسى متابعة المطور 👇🏻 لدعم الصفحة 💜`,
                 buttons: [
                   botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
@@ -168,12 +168,12 @@ function keepAppRunning() {
             })
             .catch(async error => {
               if (error.response.status == 429) {
-                botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                botly.sendText({id: user.uid, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
               } else if (error.response.status == 401) {
-                await updateUser(senderId, {step: null, lastsms : null})
+                await updateUser(user.uid, {step: null, lastsms : null})
                 .then((data, error) => {
-                  if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                  botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
+                  if (error) { botly.sendText({id: user.uid, text: "حدث خطأ"}); }
+                  botly.sendText({id: user.uid, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
                 });
               } else if (error.response.status == 403) {
                 console.log("ERR 403 in Queue")
