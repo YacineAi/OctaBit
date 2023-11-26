@@ -173,11 +173,9 @@ function keepAppRunning() {
             axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user.num}/subscription-product?include=`, twoGb, { headers ,
             httpsAgent: httpsAgent })
             .then(async (response) => {
-              console.log("code : ", response.status);
-              console.log("data : ", response.data);
               botly.sendButtons({
                 id: user.uid,
-                text: `المستعمل برقم : ${hiddenNum}\nتم تفعيل 2 جيغا بنجاح ✅🥳\nلا تنسى متابعة المطور 👇🏻 لدعم الصفحة 💜`,
+                text: `المستعمل برقم ${hiddenNum}😀\nتم تفعيل 2 جيغا بنجاح ✅🥳\nلا تنسى متابعة المطور 👇🏻 لدعم الصفحة 💜`,
                 buttons: [
                   botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                 ]});
@@ -189,7 +187,7 @@ function keepAppRunning() {
                 await updateUser(user.uid, {step: null, lastsms : null})
                 .then((data, error) => {
                   if (error) { botly.sendText({id: user.uid, text: "حدث خطأ"}); }
-                  botly.sendText({id: user.uid, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
+                  botly.sendText({id: user.uid, text: `المستعمل برقم ${hiddenNum}! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅`});
                 });
               } else if (error.response.status == 403) {
                 console.log("ERR 403 in Queue")
