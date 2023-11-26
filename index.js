@@ -16,8 +16,8 @@ const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SB_URL, process.env.SB_KEY, { auth: { persistSession: false} });
 
 const twoGb = {"data":{"id":"GIFTWALKWIN","type":"products","meta":{"services":{"steps":10000,"code":"GIFTWALKWIN2GO","id":"WALKWIN"}}}};
-const foreGb = {"data":{"id":"GIFTWALKWIN","type":"products","meta":{"services":{"steps":15000,"code":"GIFTWALKWIN4GO","id":"WALKWIN"}}}};
-const fiveGb = {"data":{"id":"GIFTWALKWIN","type":"products","meta":{"services":{"steps":33570816,"code":"GIFTWALKWIN6GOWEEK","id":"WALKWIN"}}}};
+//const foreGb = {"data":{"id":"GIFTWALKWIN","type":"products","meta":{"services":{"steps":15000,"code":"GIFTWALKWIN4GO","id":"WALKWIN"}}}};
+//const fiveGb = {"data":{"id":"GIFTWALKWIN","type":"products","meta":{"services":{"steps":33570816,"code":"GIFTWALKWIN6GOWEEK","id":"WALKWIN"}}}};
 
 /* ----- ESSENTIALS ----- */
 app.use(express.static("public"));
