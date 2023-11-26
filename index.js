@@ -137,6 +137,18 @@ async function queueDb() {
   }
 };
 
+async function deleteQueue(uid) {
+  const { data, error } = await supabase
+      .from('queue')
+      .delete()
+      .eq('logtime', uid)
+
+    if (error) {
+      throw new Error('Error creating user : ', error);
+    } else {
+      return data
+    }
+};
 
 function hideText(str) {
   const visiblePart = str.substring(0, 2);
@@ -153,9 +165,11 @@ function keepAppRunning() {
         const queue = await queueDb();
         if (queue[0]) {
           queue.forEach(async (user) => {
-            var shapNum = "0" + user.num;
-            var hiddenNum = hideText(shapNum);
-            const headers = { 'Authorization': `Bearer ${user.token}` };
+            await deleteQueue(user.logtime)
+            .then((data, error) => {
+              var shapNum = "0" + user.num;
+              var hiddenNum = hideText(shapNum);
+              const headers = { 'Authorization': `Bearer ${user.token}` };
             axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user.num}/subscription-product?include=`, twoGb, { headers ,
             httpsAgent: httpsAgent })
             .then(async (response) => {
@@ -184,6 +198,7 @@ function keepAppRunning() {
                 console.log("40x :", error.response.data)
               }
             });
+                });
           });
         } else {
           console.log("No Queue...")
