@@ -178,41 +178,72 @@ function keepAppRunning() {
         const queue = await queueDb();
         if (queue[0]) {
           queue.forEach(async (user) => {
-            await deleteQueue(user.logtime)
-            .then((data, error) => {
-              var shapNum = "0" + user.num;
-              var hiddenNum = hideText(shapNum);
-              const headers = { 'Authorization': `Bearer ${user.token}` };
-            axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user.num}/subscription-product?include=`, twoGb, { headers ,
-            httpsAgent: httpsAgent })
-            .then(async (response) => {
-              botly.sendButtons({
-                id: user.uid,
-                text: `المستعمل برقم ${hiddenNum}😀\nتم تفعيل 2 جيغا بنجاح ✅🥳\nلا تنسى متابعة المطور 👇🏻 لدعم الصفحة 💜`,
-                buttons: [
-                  botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                ]});
-            })
-            .catch(async error => {
-              if (error.response.status == 429) {
-                botly.sendText({id: user.uid, text: "4️⃣2️⃣9️⃣❗\nتمهل قليلا 😐 تم إجراء الكثير من الطلبات 📲 حاول بعد دقائق من فضلك."});
-              } else if (error.response.status == 401) {
-                await updateUser(user.uid, {step: null, lastsms : null})
-                .then((data, error) => {
-                  if (error) { botly.sendText({id: user.uid, text: "حدث خطأ"}); }
-                  botly.sendText({id: user.uid, text: `المستعمل برقم ${hiddenNum}! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅`});
+            const reget = async () => {
+              const date = new Date().toJSON().slice(0, 10);
+              const proxies = await axios.get(`https://${process.env.ProxyAPI}/api/archive/${date}`);
+              const filteredArr = proxies.data.filter(function (item) { return item.type === 4 && item.timeout < 5000 && ["fr", "us","gb","ae"].includes(item.addr_geo_iso); });
+              const randomIndex = Math.floor(Math.random() * filteredArr.length);
+              const randomObject = filteredArr[randomIndex];
+              const proxy = "socks5://" + `${randomObject.addr}`;
+              const randAgent = new SocksProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+              const shapNum = "0" + user.num;
+              const hiddenNum = hideText(shapNum);
+              try {
+                const activate2GB = await axios({
+                  method: "post",
+                  url: `https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user.num}/subscription-product?include=`,
+                  data: twoGb,
+                  headers: { 'Authorization': `Bearer ${user.token}` },
+                  httpsAgent: randAgent,
                 });
-              } else if (error.response.status == 403) {
-                console.log("ERR 403 in Queue")
-              } else if (error.response.status == 404) {
-                console.log("404 :", error.response.data)
-              } else if (error.response.status == 444) {
-              } else {
-                console.log("40x :", error.response.data)
+                await deleteQueue(user.logtime)
+                .then((data, error) => {
+                  if (activate2GB.response.status == 200) {
+                    botly.sendButtons({
+                      id: user.uid,
+                      text: `المستعمل برقم ${hiddenNum}😀\nتم تفعيل 2 جيغا بنجاح ✅🥳\nلا تنسى متابعة المطور 👇🏻 لدعم الصفحة 💜`,
+                      buttons: [
+                        botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                      ]});
+                  } else {
+                    console.log("other 200 : ", activate2GB.response.data)
+                  }
+                });
+              } catch (error) {
+                (async () => {
+                  if (error.response) {
+                    await deleteQueue(user.logtime)
+                    .then(async (data, error) => {
+                      if (error.response.status == 429) {
+                        botly.sendText({id: user.uid, text: "4️⃣2️⃣9️⃣❗\nتمهل قليلا 😐 تم إجراء الكثير من الطلبات 📲 حاول بعد دقائق من فضلك."});
+                      } else if (error.response.status == 401) {
+                        await updateUser(user.uid, {step: null, lastsms : null})
+                        .then((data, error) => {
+                          if (error) { botly.sendText({id: user.uid, text: "حدث خطأ"}); }
+                          botly.sendText({id: user.uid, text: `المستعمل برقم ${hiddenNum}! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅`});
+                        });
+                      } else if (error.response.status == 403) {
+                        console.log("ERR 403 in Queue")
+                      } else if (error.response.status == 404) {
+                        console.log("404 :", error.response.data)
+                      } else if (error.response.status == 444) {
+                      } else {
+                        console.log("40x :", error.response.data)
+                      }
+                    });
+                  } else {
+                    if (error.code == "ETIMEOUT" || error.code == "ECONNRESET") {
+                      console.log("Proxy fail Retrying...")
+                      reget();
+                    } else {
+                      console.log("other err code: ", error)
+                    }
+                  }
+                })();
               }
-            });
+            }
+            reget();
           });
-        });
         } else {
           console.log("No Queue...")
         }
@@ -220,7 +251,7 @@ function keepAppRunning() {
         console.error('Ping failed');
       }
     });
-  }, 5 * 60 * 1000); // 5 minutes in milliseconds
+  }, 5 * 60 * 1000);
 };
 
 function remainingTime(timestamp) {
@@ -246,15 +277,6 @@ function remainingTime(timestamp) {
 /* ----- HANDELS ----- */
 
 const onMessage = async (senderId, message) => {
-
-  botly.sendButtons({
-    id: senderId,
-    text: "البوت تحت الصيانة الان 😥🙌",
-    buttons: [
-      botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-    ]});
-
-  /*
   const timeNow = new Date().getTime();
     if (message.message.text) {
       const user = await userDb(senderId);
@@ -269,51 +291,81 @@ const onMessage = async (senderId, message) => {
               const waitime = remainingTime(queue[0].logtime / 1000);
               if (waitime == 'now') {
                 await updateUser(senderId, {step: null , lastsms: null})
-                  .then((data, error) => {
+                  .then(async (data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                    const headers = { 'Authorization': `Bearer ${queue[0].token}` };
-                    axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`, twoGb, { headers ,
-                    httpsAgent: httpsAgent })
-                    .then(async (response) => {
-                      await updateUser(senderId, {step: null, lastsms : null})
-                      .then((data, error) => {
-                        if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                        botly.sendButtons({
-                          id: senderId,
-                          text: "تم تفعيل الـ2 جيغا بنجاح 🥳✅\nلا تنسى متابعة مطور الصفحة 😁👇🏻",
-                          buttons: [
-                            botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                          ]});
-                      });
-                    })
-                    .catch(async error => {
-                      if (error.response.status == 429) {
-                        botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
-                      } else if (error.response.status == 401) {
-                        await updateUser(senderId, {step: null, lastsms : null})
-                        .then((data, error) => {
-                          if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                          botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
+                    const reget = async () => {
+                      const date = new Date().toJSON().slice(0, 10);
+                      const proxies = await axios.get(`https://${process.env.ProxyAPI}/api/archive/${date}`);
+                      const filteredArr = proxies.data.filter(function (item) { return item.type === 4 && item.timeout < 5000 && ["fr", "us","gb","ae"].includes(item.addr_geo_iso); });
+                      const randomIndex = Math.floor(Math.random() * filteredArr.length);
+                      const randomObject = filteredArr[randomIndex];
+                      const proxy = "socks5://" + `${randomObject.addr}`;
+                      const randAgent = new SocksProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+                      try {
+                        const activate2GB = await axios({
+                          method: "post",
+                          url: `https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${queue[0].num}/subscription-product?include=`,
+                          data: twoGb,
+                          headers: { 'Authorization': `Bearer ${queue[0].token}` },
+                          httpsAgent: randAgent,
                         });
-                      } else if (error.response.status == 403) {
-                        await updateUser(senderId, {step: "cooldown", token: otp.data.access_token, lastact: new Date().getTime() + 30 * 60 * 1000, lastsms : null})
+  
+                        await deleteQueue(queue[0].logtime)
                         .then((data, error) => {
-                          if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                          if (activate2GB.response.status == 200) {
                             botly.sendButtons({
                               id: senderId,
-                              text: "يرجى إنتظار 30 دقيقة و إعادة المحاولة",
+                              text: "تم تفعيل الـ2 جيغا بنجاح 🥳✅\nلا تنسى متابعة مطور الصفحة 😁👇🏻",
                               buttons: [
-                                botly.createPostbackButton("تفعيل تلقائي 🤖", "autoAct"),
-                                botly.createPostbackButton("إلغاء العملية ❎", "cancel")
+                                botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                               ]});
-                        });
-                      } else if (error.response.status == 404) {
-                        console.log("404 :", error.response.data)
-                      } else if (error.response.status == 444) {
-                      } else {
-                        console.log("40x :", error.response.data)
-                      }
-                    });
+                            } else {
+                              console.log("other 200 : ", activate2GB.response.data)
+                            }
+                          });
+                        } catch (error) {
+                          (async () => {
+                            if (error.response) {
+                              if (error.response.status == 429) {
+                                botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                              } else if (error.response.status == 401) {
+                                await updateUser(senderId, {step: null, lastsms : null})
+                                .then((data, error) => {
+                                  if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                                  botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
+                                });
+                              } else if (error.response.status == 403) {
+                                await updateUser(senderId, {step: "cooldown", token: otp.data.access_token, lastact: new Date().getTime() + 30 * 60 * 1000, lastsms : null})
+                                .then((data, error) => {
+                                  if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                                    botly.sendButtons({
+                                      id: senderId,
+                                      text: "يرجى إنتظار 30 دقيقة و إعادة المحاولة",
+                                      buttons: [
+                                        botly.createPostbackButton("تفعيل تلقائي 🤖", "autoAct"),
+                                        botly.createPostbackButton("إلغاء العملية ❎", "cancel")
+                                      ]});
+                                });
+                              } else if (error.response.status == 404) {
+                                console.log("404 :", error.response.data)
+                              } else if (error.response.status == 444) {
+                              } else {
+                                console.log("40x :", error.response.data)
+                              }
+                            } else {
+                              if (error.code == "ETIMEOUT" || error.code == "ECONNRESET") {
+                                console.log("Proxy fail Retrying...")
+                                reget();
+                              } else {
+                                console.log("other err code: ", error)
+                              }
+                            }
+                          })();
+                        }
+                    };
+
+                    reget();
+
                   });
               } else {
                 botly.sendText({id: senderId, text: `المستعمل ${hiddenNum} 📱\nأنت في قائمة الانتظار 📋😴\nيرجى إنتظار ${waitime} وسوف تتلقى الرد 😀.`});
@@ -379,50 +431,78 @@ const onMessage = async (senderId, message) => {
                   await updateUser(senderId, {step: null , lastsms: null})
                   .then((data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                    const headers = { 'Authorization': `Bearer ${otp.data.access_token}` };
 
-                    axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`, twoGb, { headers ,
-                    httpsAgent: httpsAgent })
-                    .then(async (response) => {
-                      await updateUser(senderId, {step: null, lastsms : null})
-                      .then((data, error) => {
-                        if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                        botly.sendButtons({
-                          id: senderId,
-                          text: "تم تفعيل الـ2 جيغا بنجاح 🥳✅\nلا تنسى متابعة مطور الصفحة 😁👇🏻",
-                          buttons: [
-                            botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                          ]});
-                      });
-                    })
-                    .catch(async error => {
-                      if (error.response.status == 429) {
-                        botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
-                      } else if (error.response.status == 401) {
-                        await updateUser(senderId, {step: null, lastsms : null})
-                        .then((data, error) => {
-                          if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                          botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
+                    const reget = async () => {
+                      const date = new Date().toJSON().slice(0, 10);
+                      const proxies = await axios.get(`https://${process.env.ProxyAPI}/api/archive/${date}`);
+                      const filteredArr = proxies.data.filter(function (item) { return item.type === 4 && item.timeout < 5000 && ["fr", "us","gb","ae"].includes(item.addr_geo_iso); });
+                      const randomIndex = Math.floor(Math.random() * filteredArr.length);
+                      const randomObject = filteredArr[randomIndex];
+                      const proxy = "socks5://" + `${randomObject.addr}`;
+                      const randAgent = new SocksProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+                      try {
+                        const activate2GB = await axios({
+                          method: "post",
+                          url: `https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`,
+                          data: twoGb,
+                          headers: { 'Authorization': `Bearer ${otp.data.access_token}` },
+                          httpsAgent: randAgent,
                         });
-                      } else if (error.response.status == 403) {
-                        await updateUser(senderId, {step: "cooldown", token: otp.data.access_token, lastact: new Date().getTime() + 30 * 60 * 1000, lastsms : null})
-                        .then((data, error) => {
-                          if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                            botly.sendButtons({
-                              id: senderId,
-                              text: "يرجى إنتظار 30 دقيقة و إعادة المحاولة",
-                              buttons: [
-                                botly.createPostbackButton("تفعيل تلقائي 🤖", "autoAct"),
-                                botly.createPostbackButton("إلغاء العملية ❎", "cancel")
-                              ]});
-                        });
-                      } else if (error.response.status == 404) {
-                        console.log("404 :", error.response.data)
-                      } else if (error.response.status == 444) {
-                      } else {
-                        console.log("40x :", error.response.data)
-                      }
-                    });
+
+                        if (activate2GB.response.status == 200) {
+                          botly.sendButtons({
+                            id: senderId,
+                            text: "تم تفعيل الـ2 جيغا بنجاح 🥳✅\nلا تنسى متابعة مطور الصفحة 😁👇🏻",
+                            buttons: [
+                              botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                            ]});
+                          } else {
+                            console.log("other 200 : ", activate2GB.response.data)
+                          }
+
+                        } catch (error) {
+                          (async () => {
+                            if (error.response) {
+                              if (error.response.status == 429) {
+                                botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                              } else if (error.response.status == 401) {
+                                await updateUser(senderId, {step: null, lastsms : null})
+                                .then((data, error) => {
+                                  if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                                  botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
+                                });
+                              } else if (error.response.status == 403) {
+                                await updateUser(senderId, {step: "cooldown", token: otp.data.access_token, lastact: new Date().getTime() + 30 * 60 * 1000, lastsms : null})
+                                .then((data, error) => {
+                                  if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                                    botly.sendButtons({
+                                      id: senderId,
+                                      text: "يرجى إنتظار 30 دقيقة و إعادة المحاولة",
+                                      buttons: [
+                                        botly.createPostbackButton("تفعيل تلقائي 🤖", "autoAct"),
+                                        botly.createPostbackButton("إلغاء العملية ❎", "cancel")
+                                      ]});
+                                });
+                              } else if (error.response.status == 404) {
+                                console.log("404 :", error.response.data)
+                              } else if (error.response.status == 444) {
+                              } else {
+                                console.log("40x :", error.response.data)
+                              }
+                            } else {
+                              if (error.code == "ETIMEOUT" || error.code == "ECONNRESET") {
+                                console.log("Proxy fail Retrying...")
+                                reget();
+                              } else {
+                                console.log("other err code: ", error)
+                              }
+                            }
+                          })();
+                        }
+                    };
+
+                    reget();
+
                   });
                 } else {
                   console.log("other otp: ", otp.data)
@@ -459,50 +539,78 @@ const onMessage = async (senderId, message) => {
                 await updateUser(senderId, {step: null , lastsms: null})
                   .then((data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                    const headers = { 'Authorization': `Bearer ${otp.data.access_token}` };
+                    
+                    const reget = async () => {
+                      const date = new Date().toJSON().slice(0, 10);
+                      const proxies = await axios.get(`https://${process.env.ProxyAPI}/api/archive/${date}`);
+                      const filteredArr = proxies.data.filter(function (item) { return item.type === 4 && item.timeout < 5000 && ["fr", "us","gb","ae"].includes(item.addr_geo_iso); });
+                      const randomIndex = Math.floor(Math.random() * filteredArr.length);
+                      const randomObject = filteredArr[randomIndex];
+                      const proxy = "socks5://" + `${randomObject.addr}`;
+                      const randAgent = new SocksProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+                      try {
+                        const activate2GB = await axios({
+                          method: "post",
+                          url: `https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`,
+                          data: twoGb,
+                          headers: { 'Authorization': `Bearer ${otp.data.access_token}` },
+                          httpsAgent: randAgent,
+                        });
 
-                    axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`, twoGb, { headers,
-                    httpsAgent: httpsAgent })
-                    .then(async (response) => {
-                      await updateUser(senderId, {step: null, lastsms : null})
-                      .then((data, error) => {
-                        if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                        botly.sendButtons({
-                          id: senderId,
-                          text: "تم تفعيل الـ2 جيغا بنجاح 🥳✅\nلا تنسى متابعة مطور الصفحة 😁👇🏻",
-                          buttons: [
-                            botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                          ]});
-                      });
-                    })
-                    .catch(async error => {
-                      if (error.response.status == 429) {
-                        botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
-                      } else if (error.response.status == 401) {
-                        await updateUser(senderId, {step: null, lastsms : null})
-                        .then((data, error) => {
-                          if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                          botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
-                        });
-                      } else if (error.response.status == 403) {
-                        await updateUser(senderId, {step: "cooldown", token: otp.data.access_token, lastact: new Date().getTime() + 30 * 60 * 1000, lastsms : null})
-                        .then((data, error) => {
-                          if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                            botly.sendButtons({
-                              id: senderId,
-                              text: "يرجى إنتظار 30 دقيقة و إعادة المحاولة",
-                              buttons: [
-                                botly.createPostbackButton("تفعيل تلقائي 🤖", "autoAct"),
-                                botly.createPostbackButton("إلغاء العملية ❎", "cancel")
-                              ]});
-                        });
-                      } else if (error.response.status == 404) {
-                        console.log("404 :", error.response.data)
-                      } else if (error.response.status == 444) {
-                      } else {
-                        console.log("40x :", error.response.data)
-                      }
-                    });
+                        if (activate2GB.response.status == 200) {
+                          botly.sendButtons({
+                            id: senderId,
+                            text: "تم تفعيل الـ2 جيغا بنجاح 🥳✅\nلا تنسى متابعة مطور الصفحة 😁👇🏻",
+                            buttons: [
+                              botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                            ]});
+                          } else {
+                            console.log("other 200 : ", activate2GB.response.data)
+                          }
+
+                        } catch (error) {
+                          (async () => {
+                            if (error.response) {
+                              if (error.response.status == 429) {
+                                botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                              } else if (error.response.status == 401) {
+                                await updateUser(senderId, {step: null, lastsms : null})
+                                .then((data, error) => {
+                                  if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                                  botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
+                                });
+                              } else if (error.response.status == 403) {
+                                await updateUser(senderId, {step: "cooldown", token: otp.data.access_token, lastact: new Date().getTime() + 30 * 60 * 1000, lastsms : null})
+                                .then((data, error) => {
+                                  if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                                    botly.sendButtons({
+                                      id: senderId,
+                                      text: "يرجى إنتظار 30 دقيقة و إعادة المحاولة",
+                                      buttons: [
+                                        botly.createPostbackButton("تفعيل تلقائي 🤖", "autoAct"),
+                                        botly.createPostbackButton("إلغاء العملية ❎", "cancel")
+                                      ]});
+                                });
+                              } else if (error.response.status == 404) {
+                                console.log("404 :", error.response.data)
+                              } else if (error.response.status == 444) {
+                              } else {
+                                console.log("40x :", error.response.data)
+                              }
+                            } else {
+                              if (error.code == "ETIMEOUT" || error.code == "ECONNRESET") {
+                                console.log("Proxy fail Retrying...")
+                                reget();
+                              } else {
+                                console.log("other err code: ", error)
+                              }
+                            }
+                          })();
+                        }
+                    };
+
+                    reget();
+                  
                   });
               } else {
                 console.log("other otp: ", otp.data)
@@ -578,7 +686,6 @@ const onMessage = async (senderId, message) => {
       } else if (message.message.attachments[0].type == "image" || message.message.attachments[0].type == "audio" || message.message.attachments[0].type == "video") {
         //
       }
-      */
 };
 /* ----- POSTBACK ----- */
 
