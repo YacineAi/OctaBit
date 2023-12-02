@@ -228,7 +228,7 @@ function remainingTime(timestamp) {
   const remainingSeconds = Math.max(timestamp - currentTime, 0);
 
   if (remainingSeconds === 0) {
-    return 'لحظات';
+    return 'now';
   }
 
   const minutes = Math.floor(remainingSeconds / 60);
@@ -239,7 +239,7 @@ function remainingTime(timestamp) {
   } else if (remainingSeconds <= 660 && remainingSeconds > 60) {
     return `${minutes} دقائق`;
   } else {
-    return `${remaining} ثانية`;
+    return `${Math.floor(remaining)} ثانية`;
   }
 }
 
@@ -258,6 +258,55 @@ const onMessage = async (senderId, message) => {
             if (queue[0]) {
               var hiddenNum = hideText(numberString);
               const waitime = remainingTime(queue[0].logtime / 1000);
+              if (waitime == "now") {
+                await updateUser(senderId, {step: null , lastsms: null})
+                  .then((data, error) => {
+                    if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                    const headers = { 'Authorization': `Bearer ${queue[0].token}` };
+                    axios.post(`https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`, twoGb, { headers ,
+                    httpsAgent: httpsAgent })
+                    .then(async (response) => {
+                      await updateUser(senderId, {step: null, lastsms : null})
+                      .then((data, error) => {
+                        if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                        botly.sendButtons({
+                          id: senderId,
+                          text: "تم تفعيل الـ2 جيغا بنجاح 🥳✅\nلا تنسى متابعة مطور الصفحة 😁👇🏻",
+                          buttons: [
+                            botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                          ]});
+                      });
+                    })
+                    .catch(async error => {
+                      if (error.response.status == 429) {
+                        botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                      } else if (error.response.status == 401) {
+                        await updateUser(senderId, {step: null, lastsms : null})
+                        .then((data, error) => {
+                          if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                          botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
+                        });
+                      } else if (error.response.status == 403) {
+                        await updateUser(senderId, {step: "cooldown", token: otp.data.access_token, lastact: new Date().getTime() + 30 * 60 * 1000, lastsms : null})
+                        .then((data, error) => {
+                          if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                            botly.sendButtons({
+                              id: senderId,
+                              text: "يرجى إنتظار 30 دقيقة و إعادة المحاولة",
+                              buttons: [
+                                botly.createPostbackButton("تفعيل تلقائي 🤖", "autoAct"),
+                                botly.createPostbackButton("إلغاء العملية ❎", "cancel")
+                              ]});
+                        });
+                      } else if (error.response.status == 404) {
+                        console.log("404 :", error.response.data)
+                      } else if (error.response.status == 444) {
+                      } else {
+                        console.log("40x :", error.response.data)
+                      }
+                    });
+                  });
+              }
               botly.sendText({id: senderId, text: `المستعمل ${hiddenNum} 📱\nأنت في قائمة الانتظار 📋😴\nيرجى إنتظار ${waitime} وسوف تتلقى الرد 😀.`});
             } else {
               if (numberString.length === 10 && !isNaN(numberString) && numberString.startsWith("07")) {
