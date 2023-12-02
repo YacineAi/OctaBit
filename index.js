@@ -289,6 +289,8 @@ const onMessage = async (senderId, message) => {
               console.log(error)
                 if (error.response.status == 429) {
                   botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                } else if (error.response.status == 400) {
+                  botly.sendText({id: senderId, text: "الرقم الذي أدخلته غير موجود"});
                 } else {
                   console.log("other err: ", error.response.data)
                 }
