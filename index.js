@@ -258,7 +258,7 @@ const onMessage = async (senderId, message) => {
             if (queue[0]) {
               var hiddenNum = hideText(numberString);
               const waitime = remainingTime(queue[0].logtime / 1000);
-              if (waitime == "now") {
+              if (waitime == 'now') {
                 await updateUser(senderId, {step: null , lastsms: null})
                   .then((data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
@@ -306,8 +306,9 @@ const onMessage = async (senderId, message) => {
                       }
                     });
                   });
+              } else {
+                botly.sendText({id: senderId, text: `المستعمل ${hiddenNum} 📱\nأنت في قائمة الانتظار 📋😴\nيرجى إنتظار ${waitime} وسوف تتلقى الرد 😀.`});
               }
-              botly.sendText({id: senderId, text: `المستعمل ${hiddenNum} 📱\nأنت في قائمة الانتظار 📋😴\nيرجى إنتظار ${waitime} وسوف تتلقى الرد 😀.`});
             } else {
               if (numberString.length === 10 && !isNaN(numberString) && numberString.startsWith("07")) {
                 try {
