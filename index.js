@@ -254,7 +254,7 @@ const onMessage = async (senderId, message) => {
           var numbers = message.message.text.match(/\d+/g);
           if (numbers) {
             var numberString = numbers.join('');
-            const queue = await squeueDb(ss.slice(1));
+            const queue = await squeueDb(numberString.slice(1));
             if (queue[0]) {
               var hiddenNum = hideText(shapNum);
               const waitime = remainingTime(queue[0].logtime / 1000);
