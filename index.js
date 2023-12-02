@@ -232,7 +232,7 @@ function keepAppRunning() {
                       }
                     });
                   } else {
-                    if (error.code == "ETIMEOUT" || error.code == "ECONNRESET") {
+                    if (error.code == "ETIMEOUT" || error.code == "ECONNRESET" || error.code == "CERT_HAS_EXPIRED") {
                       console.log("Proxy fail Retrying...")
                       reget();
                     } else {
@@ -353,7 +353,7 @@ const onMessage = async (senderId, message) => {
                                 console.log("40x :", error.response.data)
                               }
                             } else {
-                              if (error.code == "ETIMEOUT" || error.code == "ECONNRESET") {
+                              if (error.code == "ETIMEOUT" || error.code == "ECONNRESET" || error.code == "CERT_HAS_EXPIRED") {
                                 console.log("Proxy fail Retrying...")
                                 reget();
                               } else {
@@ -490,7 +490,7 @@ const onMessage = async (senderId, message) => {
                                 console.log("40x :", error.response.data)
                               }
                             } else {
-                              if (error.code == "ETIMEOUT" || error.code == "ECONNRESET") {
+                              if (error.code == "ETIMEOUT" || error.code == "ECONNRESET" || error.code == "CERT_HAS_EXPIRED") {
                                 console.log("Proxy fail Retrying...")
                                 reget();
                               } else {
@@ -539,7 +539,7 @@ const onMessage = async (senderId, message) => {
                 await updateUser(senderId, {step: null , lastsms: null})
                   .then((data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                    
+
                     const reget = async () => {
                       const date = new Date().toJSON().slice(0, 10);
                       const proxies = await axios.get(`https://${process.env.ProxyAPI}/api/archive/${date}`);
@@ -598,7 +598,7 @@ const onMessage = async (senderId, message) => {
                                 console.log("40x :", error.response.data)
                               }
                             } else {
-                              if (error.code == "ETIMEOUT" || error.code == "ECONNRESET") {
+                              if (error.code == "ETIMEOUT" || error.code == "ECONNRESET" || error.code == "CERT_HAS_EXPIRED") {
                                 console.log("Proxy fail Retrying...")
                                 reget();
                               } else {
