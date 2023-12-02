@@ -572,8 +572,7 @@ const onPostBack = async (senderId, message, postback) => {
         } else if (postback == "rephone") {
             botly.sendText({id: senderId, text: "حسنا. يرجى إدخال رقم آخر 📱"});
         } else if (postback.startsWith("num-")) {
-            let num = postback.split("num-");
-            
+          botly.sendText({id: senderId, text: "تم تغيير نظام العمل 😴"});
         } else if (postback == "autoAct") {
           const user = await userDb(senderId);
           if (user[0].step == "cooldown") {
