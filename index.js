@@ -246,6 +246,15 @@ function remainingTime(timestamp) {
 /* ----- HANDELS ----- */
 
 const onMessage = async (senderId, message) => {
+
+  botly.sendButtons({
+    id: senderId,
+    text: "البوت تحت الصيانة الان 😥🙌",
+    buttons: [
+      botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+    ]});
+
+  /*
   const timeNow = new Date().getTime();
     if (message.message.text) {
       const user = await userDb(senderId);
@@ -569,6 +578,7 @@ const onMessage = async (senderId, message) => {
       } else if (message.message.attachments[0].type == "image" || message.message.attachments[0].type == "audio" || message.message.attachments[0].type == "video") {
         //
       }
+      */
 };
 /* ----- POSTBACK ----- */
 
