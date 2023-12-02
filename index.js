@@ -261,12 +261,38 @@ const onMessage = async (senderId, message) => {
               botly.sendText({id: senderId, text: `المستعمل ${hiddenNum} 📱\nأنت في قائمة الانتظار 📋😴\nيرجى إنتظار ${waitime} وسوف تتلقى الرد 😀.`});
             } else {
               if (numberString.length === 10 && !isNaN(numberString) && numberString.startsWith("07")) {
-                botly.sendButtons({
-                  id: senderId,
-                  text: `هل تؤكد أن (${numberString}) هو رقمك 📱؟`,
-                  buttons: [
-                    botly.createPostbackButton("نعم ✅", `num-${numberString}`),
-                    botly.createPostbackButton("لا ❎", "rephone")]});
+                try {
+                  const timeNow = new Date().getTime();
+                  const user = await userDb(senderId);
+                  if (user[0].lastsms == null || user[0].lastsms < timeNow) {
+                    const response = await axios({
+                      method: "post",
+                      url: "https://apim.djezzy.dz/oauth2/registration",
+                      data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + numberString.slice(1),
+                      headers: { "content-type":"application/x-www-form-urlencoded" },
+                      httpsAgent: httpsAgent,
+                    });
+                    if (response.data.status == 200) {
+                      const smsTimer = new Date().getTime() + 2 * 60 * 1000;
+                      await updateUser(senderId, {step: "sms", num: numberString.slice(1), lastsms :smsTimer})
+                      .then((data, error) => {
+                        if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                        botly.sendText({id: senderId, text: "تم إرسال الرمز إلى الرقم 💬\nيرجى نسخ الرسالة 📋 أو كتابة الارقام التي وصلتك 🔢"});
+                      });
+                    } else {
+                      console.log(response.data)
+                    }
+                  } else {
+                botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
+              }
+            } catch (error) {
+              console.log(error)
+                if (error.response.status == 429) {
+                  botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                } else {
+                  console.log("other err: ", error.response.data)
+                }
+            }
               } else {
                 botly.sendText({id: senderId, text: "يرجى إدخال أرقام جيزي فقط !📱"});
               }
@@ -545,39 +571,7 @@ const onPostBack = async (senderId, message, postback) => {
             botly.sendText({id: senderId, text: "حسنا. يرجى إدخال رقم آخر 📱"});
         } else if (postback.startsWith("num-")) {
             let num = postback.split("num-");
-            let shp = num[1].slice(-9);
-            try {
-              const timeNow = new Date().getTime();
-              const user = await userDb(senderId);
-              if (user[0].lastsms == null || user[0].lastsms < timeNow) {
-                const response = await axios({
-                  method: "post",
-                  url: "https://apim.djezzy.dz/oauth2/registration",
-                  data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + shp,
-                  headers: { "content-type":"application/x-www-form-urlencoded" },
-                  httpsAgent: httpsAgent,
-                });
-                if (response.data.status == 200) {
-                  const smsTimer = new Date().getTime() + 2 * 60 * 1000;
-                  await updateUser(senderId, {step: "sms", num: shp, lastsms :smsTimer})
-                  .then((data, error) => {
-                    if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                    botly.sendText({id: senderId, text: "تم إرسال الرمز إلى الرقم 💬\nيرجى نسخ الرسالة 📋 أو كتابة الارقام التي وصلتك 🔢"});
-                  });
-                } else {
-                  console.log(response.data)
-                }
-              } else {
-                botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
-              }
-            } catch (error) {
-              console.log(error)
-                if (error.response.status == 429) {
-                  botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
-                } else {
-                  console.log("other err: ", error.response.data)
-                }
-            }
+            
         } else if (postback == "autoAct") {
           const user = await userDb(senderId);
           if (user[0].step == "cooldown") {
