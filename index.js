@@ -256,7 +256,7 @@ const onMessage = async (senderId, message) => {
             var numberString = numbers.join('');
             const queue = await squeueDb(numberString.slice(1));
             if (queue[0]) {
-              var hiddenNum = hideText(shapNum);
+              var hiddenNum = hideText(numberString);
               const waitime = remainingTime(queue[0].logtime / 1000);
               botly.sendText({id: senderId, text: `المستعمل ${hiddenNum} 📱\nأنت في قائمة الانتظار 📋😴\nيرجى إنتظار ${waitime} وسوف تتلقى الرد 😀.`});
             } else {
