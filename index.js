@@ -548,7 +548,7 @@ const onMessage = async (senderId, message) => {
                           headers: { 'Authorization': `Bearer ${otp.data.access_token}` },
                           httpsAgent: randAgent,
                         });
-
+                        console.log("552 Log : ", activate2GB.response.data)
                         if (activate2GB.response.status == 200) {
                           botly.sendButtons({
                             id: senderId,
