@@ -179,12 +179,10 @@ function keepAppRunning() {
         if (queue[0]) {
           queue.forEach(async (user) => {
             const reget = async () => {
-              const date = new Date().toJSON().slice(0, 10);
-              const proxies = await axios.get(`https://${process.env.ProxyAPI}/api/archive/${date}`);
-              const filteredArr = proxies.data.filter(function (item) { return item.type === 4 && item.timeout < 5000 && ["fr", "us","gb","ae"].includes(item.addr_geo_iso); });
-              const randomIndex = Math.floor(Math.random() * filteredArr.length);
-              const randomObject = filteredArr[randomIndex];
-              const proxy = "socks5://" + `${randomObject.addr}`;
+              const proxies = await axios.get(`https://${process.env.MYAPI}/list`);
+              const randomIndex = Math.floor(Math.random() * proxies.data.length);
+              const randomObject = proxies.data[randomIndex];
+              const proxy = "socks5://" + `${randomObject}`;
               const randAgent = new SocksProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
               const shapNum = "0" + user.num;
               const hiddenNum = hideText(shapNum);
@@ -294,12 +292,10 @@ const onMessage = async (senderId, message) => {
                   .then(async (data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                     const reget = async () => {
-                      const date = new Date().toJSON().slice(0, 10);
-                      const proxies = await axios.get(`https://${process.env.ProxyAPI}/api/archive/${date}`);
-                      const filteredArr = proxies.data.filter(function (item) { return item.type === 4 && item.timeout < 5000 && ["fr", "us","gb","ae"].includes(item.addr_geo_iso); });
-                      const randomIndex = Math.floor(Math.random() * filteredArr.length);
-                      const randomObject = filteredArr[randomIndex];
-                      const proxy = "socks5://" + `${randomObject.addr}`;
+                      const proxies = await axios.get(`https://${process.env.MYAPI}/list`);
+                      const randomIndex = Math.floor(Math.random() * proxies.data.length);
+                      const randomObject = proxies.data[randomIndex];
+                      const proxy = "socks5://" + `${randomObject}`;
                       const randAgent = new SocksProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
                       try {
                         const activate2GB = await axios({
@@ -433,12 +429,10 @@ const onMessage = async (senderId, message) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
 
                     const reget = async () => {
-                      const date = new Date().toJSON().slice(0, 10);
-                      const proxies = await axios.get(`https://${process.env.ProxyAPI}/api/archive/${date}`);
-                      const filteredArr = proxies.data.filter(function (item) { return item.type === 4 && item.timeout < 5000 && ["fr", "us","gb","ae"].includes(item.addr_geo_iso); });
-                      const randomIndex = Math.floor(Math.random() * filteredArr.length);
-                      const randomObject = filteredArr[randomIndex];
-                      const proxy = "socks5://" + `${randomObject.addr}`;
+                      const proxies = await axios.get(`https://${process.env.MYAPI}/list`);
+                      const randomIndex = Math.floor(Math.random() * proxies.data.length);
+                      const randomObject = proxies.data[randomIndex];
+                      const proxy = "socks5://" + `${randomObject}`;
                       const randAgent = new SocksProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
                       try {
                         const activate2GB = await axios({
@@ -541,12 +535,10 @@ const onMessage = async (senderId, message) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
 
                     const reget = async () => {
-                      const date = new Date().toJSON().slice(0, 10);
-                      const proxies = await axios.get(`https://${process.env.ProxyAPI}/api/archive/${date}`);
-                      const filteredArr = proxies.data.filter(function (item) { return item.type === 4 && item.timeout < 5000 && ["fr", "us","gb","ae"].includes(item.addr_geo_iso); });
-                      const randomIndex = Math.floor(Math.random() * filteredArr.length);
-                      const randomObject = filteredArr[randomIndex];
-                      const proxy = "socks5://" + `${randomObject.addr}`;
+                      const proxies = await axios.get(`https://${process.env.MYAPI}/list`);
+                      const randomIndex = Math.floor(Math.random() * proxies.data.length);
+                      const randomObject = proxies.data[randomIndex];
+                      const proxy = "socks5://" + `${randomObject}`;
                       const randAgent = new SocksProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
                       try {
                         const activate2GB = await axios({
