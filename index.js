@@ -196,7 +196,7 @@ function keepAppRunning() {
                 });
                 await deleteQueue(user.logtime)
                 .then((data, error) => {
-                  if (activate2GB.response.status == 200) {
+                  if (activate2GB.status == 200) {
                     botly.sendButtons({
                       id: user.uid,
                       text: `المستعمل برقم ${hiddenNum}😀\nتم تفعيل 2 جيغا بنجاح ✅🥳\nلا تنسى متابعة المطور 👇🏻 لدعم الصفحة 💜`,
@@ -204,7 +204,7 @@ function keepAppRunning() {
                         botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                       ]});
                   } else {
-                    console.log("other 200 : ", activate2GB.response.data)
+                    console.log("other 200 : ", activate2GB.data)
                   }
                 });
               } catch (error) {
@@ -308,7 +308,7 @@ const onMessage = async (senderId, message) => {
   
                         await deleteQueue(queue[0].logtime)
                         .then((data, error) => {
-                          if (activate2GB.response.status == 200) {
+                          if (activate2GB.status == 200) {
                             botly.sendButtons({
                               id: senderId,
                               text: "تم تفعيل الـ2 جيغا بنجاح 🥳✅\nلا تنسى متابعة مطور الصفحة 😁👇🏻",
@@ -316,7 +316,7 @@ const onMessage = async (senderId, message) => {
                                 botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                               ]});
                             } else {
-                              console.log("other 200 : ", activate2GB.response.data)
+                              console.log("other 200 : ", activate2GB.data)
                             }
                           });
                         } catch (error) {
@@ -443,7 +443,7 @@ const onMessage = async (senderId, message) => {
                           httpsAgent: randAgent,
                         });
 
-                        if (activate2GB.response.status == 200) {
+                        if (activate2GB.status == 200) {
                           botly.sendButtons({
                             id: senderId,
                             text: "تم تفعيل الـ2 جيغا بنجاح 🥳✅\nلا تنسى متابعة مطور الصفحة 😁👇🏻",
@@ -451,7 +451,7 @@ const onMessage = async (senderId, message) => {
                               botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                             ]});
                           } else {
-                            console.log("other 200 : ", activate2GB.response.data)
+                            console.log("other 200 : ", activate2GB.data)
                           }
 
                         } catch (error) {
@@ -548,8 +548,8 @@ const onMessage = async (senderId, message) => {
                           headers: { 'Authorization': `Bearer ${otp.data.access_token}` },
                           httpsAgent: randAgent,
                         });
-                        console.log("552 Log : ", activate2GB.response.data)
-                        if (activate2GB.response.status == 200) {
+                        //console.log("552 Log : ", activate2GB.data)
+                        if (activate2GB.status == 200) {
                           botly.sendButtons({
                             id: senderId,
                             text: "تم تفعيل الـ2 جيغا بنجاح 🥳✅\nلا تنسى متابعة مطور الصفحة 😁👇🏻",
@@ -557,7 +557,7 @@ const onMessage = async (senderId, message) => {
                               botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                             ]});
                           } else {
-                            console.log("other 200 : ", activate2GB.response.data)
+                            console.log("other 200 : ", activate2GB.data)
                           }
 
                         } catch (error) {
