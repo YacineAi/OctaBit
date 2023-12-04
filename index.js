@@ -212,30 +212,42 @@ function keepAppRunning() {
               } catch (error) {
                 (async () => {
                   if (error.response) {
-                    await deleteQueue(user.logtime)
-                    .then(async (data, error) => {
-                      if (error.response.status == 429) {
+                    if (error.response.status == 429) {
+                      await deleteQueue(user.logtime)
+                      .then(async (data, error) => {
                         botly.sendText({id: user.uid, text: "4️⃣2️⃣9️⃣❗\nتمهل قليلا 😐 تم إجراء الكثير من الطلبات 📲 حاول بعد دقائق من فضلك."});
-                      } else if (error.response.status == 401) {
+                      }); 
+                    } else if (error.response.status == 401) {
+                      await deleteQueue(user.logtime)
+                      .then(async (data, error) => {
                         await updateUser(user.uid, {step: null, lastsms : null})
-                        .then((data, error) => {
-                          if (error) { botly.sendText({id: user.uid, text: "حدث خطأ"}); }
-                          botly.sendText({id: user.uid, text: `المستعمل برقم ${hiddenNum}! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅`});
-                        });
-                      } else if (error.response.status == 403) {
+                      .then((data, error) => {
+                        if (error) { botly.sendText({id: user.uid, text: "حدث خطأ"}); }
+                        botly.sendText({id: user.uid, text: `المستعمل برقم ${hiddenNum}! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅`});
+                      });
+                      });
+                    } else if (error.response.status == 403) {
+                      await deleteQueue(user.logtime)
+                      .then(async (data, error) => {
                         console.log("ERR 403 in Queue")
-                      } else if (error.response.status == 404) {
+                      });
+                    } else if (error.response.status == 404) {
+                      await deleteQueue(user.logtime)
+                      .then(async (data, error) => {
                         botly.sendButtons({
-                                  id: senderId,
-                                  text: "حدث خطأ. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
-                                  buttons: [
-                                    botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                                  ]});
-                      } else if (error.response.status == 444) {
-                      } else {
-                        console.log("40x :", error.response.data)
-                      }
-                    });
+                          id: senderId,
+                          text: "حدث خطأ. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
+                          buttons: [
+                            botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                          ]});
+                      });
+                    } else if (error.response.status == 444) {
+                    } else {
+                      await deleteQueue(user.logtime)
+                      .then(async (data, error) => {
+                        console.log("40x :", error.response.status)
+                      });
+                    }
                   } else {
                     console.log("Proxy fail Retrying...")
                     reget();
@@ -354,7 +366,7 @@ const onMessage = async (senderId, message) => {
                                   ]});
                               } else if (error.response.status == 444) {
                               } else {
-                                console.log("40x :", error.response.data)
+                                console.log("40x :", error.response.status)
                               }
                             } else {
                               console.log("Proxy fail Retrying...")
@@ -490,7 +502,7 @@ const onMessage = async (senderId, message) => {
                                   ]});
                               } else if (error.response.status == 444) {
                               } else {
-                                console.log("40x :", error.response.data)
+                                console.log("40x :", error.response.status)
                               }
                             } else {
                               console.log("Proxy fail Retrying...")
@@ -597,7 +609,7 @@ const onMessage = async (senderId, message) => {
                                   ]});
                               } else if (error.response.status == 444) {
                               } else {
-                                console.log("40x :", error.response.data)
+                                console.log("40x :", error.response.status)
                               }
                             } else {
                               console.log("Proxy fail Retrying...")
