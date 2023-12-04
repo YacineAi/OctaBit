@@ -171,7 +171,7 @@ function hideText(str) {
 }
 
 function keepAppRunning() {
-  setInterval(() => {
+  setInterval(async () => {
     https.get(`${process.env.RENDER_EXTERNAL_URL}/ping`, async (resp) => {
       if (resp.statusCode === 200) {
         console.log('Ping successful');
@@ -761,7 +761,13 @@ const onPostBack = async (senderId, message, postback) => {
       }
 };
 /* ----- HANDELS ----- */
-app.listen(3000, () => {
-  console.log("App is on port : 3000");
-  keepAppRunning();
+app.listen(3000, async () => {
+  var myip = await axios.get("https://api.ipbase.com/v2/info?ip=");
+    var info = {
+      ip : myip.data.data.ip,
+      org: myip.data.data.connection
+    };
+    console.log(info);
+    console.log("App is on port : 3000");
+    keepAppRunning();
 });
