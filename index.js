@@ -230,12 +230,8 @@ function keepAppRunning() {
                       }
                     });
                   } else {
-                    if (error.code == "ETIMEOUT" || error.code == "ECONNRESET" || error.code == "CERT_HAS_EXPIRED") {
-                      console.log("Proxy fail Retrying...")
-                      reget();
-                    } else {
-                      console.log("other err code: ", error)
-                    }
+                    console.log("Proxy fail Retrying...")
+                    reget();
                   }
                 })();
               }
@@ -349,12 +345,8 @@ const onMessage = async (senderId, message) => {
                                 console.log("40x :", error.response.data)
                               }
                             } else {
-                              if (error.code == "ETIMEOUT" || error.code == "ECONNRESET" || error.code == "CERT_HAS_EXPIRED") {
-                                console.log("Proxy fail Retrying...")
-                                reget();
-                              } else {
-                                console.log("other err code: ", error)
-                              }
+                              console.log("Proxy fail Retrying...")
+                              reget();
                             }
                           })();
                         }
@@ -484,12 +476,8 @@ const onMessage = async (senderId, message) => {
                                 console.log("40x :", error.response.data)
                               }
                             } else {
-                              if (error.code == "ETIMEOUT" || error.code == "ECONNRESET" || error.code == "CERT_HAS_EXPIRED") {
-                                console.log("Proxy fail Retrying...")
-                                reget();
-                              } else {
-                                console.log("other err code: ", error)
-                              }
+                              console.log("Proxy fail Retrying...")
+                              reget();
                             }
                           })();
                         }
@@ -590,12 +578,8 @@ const onMessage = async (senderId, message) => {
                                 console.log("40x :", error.response.data)
                               }
                             } else {
-                              if (error.code == "ETIMEOUT" || error.code == "ECONNRESET" || error.code == "CERT_HAS_EXPIRED") {
-                                console.log("Proxy fail Retrying...")
-                                reget();
-                              } else {
-                                console.log("other err code: ", error)
-                              }
+                              console.log("Proxy fail Retrying...")
+                              reget();
                             }
                           })();
                         }
