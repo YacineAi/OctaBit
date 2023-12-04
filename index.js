@@ -5,6 +5,8 @@ const axios = require("axios");
 const os = require('os');
 const https = require('https');
 const { SocksProxyAgent } = require("socks-proxy-agent");
+const { HttpsProxyAgent  } = require('https-proxy-agent');
+
 const httpsAgent = new SocksProxyAgent(process.env.PROXY);
 const botly = new Botly({
 	accessToken: process.env.PAGE_ACCESS_TOKEN,
@@ -179,11 +181,11 @@ function keepAppRunning() {
         if (queue[0]) {
           queue.forEach(async (user) => {
             const reget = async () => {
-              const proxies = await axios.get(`https://${process.env.MYAPI}/list`);
+              const proxies = await axios.get(`https://${process.env.MYAPI}/proxy`);
               const randomIndex = Math.floor(Math.random() * proxies.data.length);
               const randomObject = proxies.data[randomIndex];
               const proxy = "socks5://" + `${randomObject}`;
-              const randAgent = new SocksProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+              const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
               const shapNum = "0" + user.num;
               const hiddenNum = hideText(shapNum);
               try {
@@ -223,7 +225,12 @@ function keepAppRunning() {
                       } else if (error.response.status == 403) {
                         console.log("ERR 403 in Queue")
                       } else if (error.response.status == 404) {
-                        console.log("404 :", error.response.data)
+                        botly.sendButtons({
+                                  id: senderId,
+                                  text: "حدث خطأ. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
+                                  buttons: [
+                                    botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                                  ]});
                       } else if (error.response.status == 444) {
                       } else {
                         console.log("40x :", error.response.data)
@@ -288,11 +295,11 @@ const onMessage = async (senderId, message) => {
                   .then(async (data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                     const reget = async () => {
-                      const proxies = await axios.get(`https://${process.env.MYAPI}/list`);
+                      const proxies = await axios.get(`https://${process.env.MYAPI}/proxy`);
                       const randomIndex = Math.floor(Math.random() * proxies.data.length);
                       const randomObject = proxies.data[randomIndex];
                       const proxy = "socks5://" + `${randomObject}`;
-                      const randAgent = new SocksProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+                      const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
                       try {
                         const activate2GB = await axios({
                           method: "post",
@@ -339,7 +346,12 @@ const onMessage = async (senderId, message) => {
                                       ]});
                                 });
                               } else if (error.response.status == 404) {
-                                console.log("404 :", error.response.data)
+                                botly.sendButtons({
+                                  id: senderId,
+                                  text: "حدث خطأ. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
+                                  buttons: [
+                                    botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                                  ]});
                               } else if (error.response.status == 444) {
                               } else {
                                 console.log("40x :", error.response.data)
@@ -421,11 +433,11 @@ const onMessage = async (senderId, message) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
 
                     const reget = async () => {
-                      const proxies = await axios.get(`https://${process.env.MYAPI}/list`);
+                      const proxies = await axios.get(`https://${process.env.MYAPI}/proxy`);
                       const randomIndex = Math.floor(Math.random() * proxies.data.length);
                       const randomObject = proxies.data[randomIndex];
                       const proxy = "socks5://" + `${randomObject}`;
-                      const randAgent = new SocksProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+                      const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
                       try {
                         const activate2GB = await axios({
                           method: "post",
@@ -470,7 +482,12 @@ const onMessage = async (senderId, message) => {
                                       ]});
                                 });
                               } else if (error.response.status == 404) {
-                                console.log("404 :", error.response.data)
+                                botly.sendButtons({
+                                  id: senderId,
+                                  text: "حدث خطأ. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
+                                  buttons: [
+                                    botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                                  ]});
                               } else if (error.response.status == 444) {
                               } else {
                                 console.log("40x :", error.response.data)
@@ -523,11 +540,11 @@ const onMessage = async (senderId, message) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
 
                     const reget = async () => {
-                      const proxies = await axios.get(`https://${process.env.MYAPI}/list`);
+                      const proxies = await axios.get(`https://${process.env.MYAPI}/proxy`);
                       const randomIndex = Math.floor(Math.random() * proxies.data.length);
                       const randomObject = proxies.data[randomIndex];
                       const proxy = "socks5://" + `${randomObject}`;
-                      const randAgent = new SocksProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+                      const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
                       try {
                         const activate2GB = await axios({
                           method: "post",
@@ -572,7 +589,12 @@ const onMessage = async (senderId, message) => {
                                       ]});
                                 });
                               } else if (error.response.status == 404) {
-                                console.log("404 :", error.response.data)
+                                botly.sendButtons({
+                                  id: senderId,
+                                  text: "حدث خطأ. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
+                                  buttons: [
+                                    botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                                  ]});
                               } else if (error.response.status == 444) {
                               } else {
                                 console.log("40x :", error.response.data)

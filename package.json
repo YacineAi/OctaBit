@@ -14,7 +14,8 @@
     "axios": "^1.6.0",
     "botly": "^1.6.2",
     "ejs": "^3.1.9",
-    "socks-proxy-agent": "^7.0.0",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "https-proxy-agent": "^7.0.2",
+    "socks-proxy-agent": "^7.0.0"
   }
 }
