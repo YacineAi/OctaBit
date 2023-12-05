@@ -414,8 +414,15 @@ const onMessage = async (senderId, message) => {
                   botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
                 } else if (error.response.status == 400) {
                   botly.sendText({id: senderId, text: "الرقم الذي أدخلته غير موجود"});
+                } else if (error.response.status == 404) {
+                  botly.sendButtons({
+                    id: senderId,
+                    text: "حدث خطأ. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
+                    buttons: [
+                      botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                    ]});
                 } else {
-                  console.log("other err: ", error.response.data)
+                  console.log("other err: ", error.response.status)
                 }
             }
               } else {
@@ -522,7 +529,7 @@ const onMessage = async (senderId, message) => {
                 if (error.response.status == 429) {
                   botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
                 } else {
-                  console.log("other err: ", error.response.data)
+                  console.log("other err: ", error.response.status)
                 }
               }
             } else {
@@ -629,7 +636,7 @@ const onMessage = async (senderId, message) => {
               if (error.response.status == 429) {
                 botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
               } else {
-                console.log("other err: ", error.response.data)
+                console.log("other err: ", error.response.status)
               }
             }
           } else {
@@ -735,8 +742,15 @@ const onPostBack = async (senderId, message, postback) => {
             } catch (error) {
                 if (error.response.status == 429) {
                   botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا..."});
+                } else if (error.response.status == 404) {
+                  botly.sendButtons({
+                    id: senderId,
+                    text: "حدث خطأ. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
+                    buttons: [
+                      botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                    ]});
                 } else {
-                  console.log("other err: ", error.response.data)
+                  console.log("other err: ", error.response.status)
                 }
             }
           }
