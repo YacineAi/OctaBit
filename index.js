@@ -264,7 +264,7 @@ function keepAppRunning() {
         console.error('Ping failed');
       }
     });
-  }, 5 * 60 * 1000);
+  }, 2 * 60 * 1000);
 };
 
 function remainingTime(timestamp) {
