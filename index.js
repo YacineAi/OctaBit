@@ -800,6 +800,16 @@ app.listen(3000, async () => {
       org: myip.data.data.connection
     };
     console.log(info);
-    console.log("App is on port : 3000");
+    var proxip = await axios.get(`https://${process.env.THEAPI}type=get`);
+    if (myip.data.data.ip == proxip.data.whitelisted[0]) {
+      console.log("IP Match ✅");
+    } else {
+      var replaceip = await axios.get(`https://${process.env.THEAPI}type=set&ip[]=${proxip.data.whitelisted[0]}&ip[]=${myip.data.data.ip}`);
+      if (replaceip.data.status == 200) {
+        console.log("IP Replaced 🔄");
+      }
+    }
+
+    console.log("App is on port : 3000 🥳");
     keepAppRunning();
 });
