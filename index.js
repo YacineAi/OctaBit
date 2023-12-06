@@ -438,12 +438,17 @@ const onMessage = async (senderId, message) => {
             const match = message.message.text.match(regex);
             if (user[0].lastsms > timeNow) {
               try {
+                const proxies = await axios.get(`https://${process.env.MYAPI}/proxy`);
+                const randomIndex = Math.floor(Math.random() * proxies.data.length);
+                const randomObject = proxies.data[randomIndex];
+                const proxy = "socks5://" + `${randomObject}`;
+                const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
                 const otp = await axios({
                   method: "post",
                   url: "https://apim.djezzy.dz/oauth2/token",
                   data: `scope=openid&client_secret=MVpXHW_ImuMsxKIwrJpoVVMHjRsa&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&otp=${match[1]}&mobileNumber=213${user[0].num}&grant_type=mobile`,
                   headers: { "content-type":"application/x-www-form-urlencoded" },
-                  httpsAgent: httpsAgent,
+                  httpsAgent: randAgent,
                 });
 
                 if (otp.data.access_token != undefined) {
@@ -544,12 +549,17 @@ const onMessage = async (senderId, message) => {
           } else if (message.message.text.length === 6 && !isNaN(message.message.text)) {
             if (user[0].lastsms > timeNow) {
             try {
+              const proxies = await axios.get(`https://${process.env.MYAPI}/proxy`);
+              const randomIndex = Math.floor(Math.random() * proxies.data.length);
+              const randomObject = proxies.data[randomIndex];
+              const proxy = "socks5://" + `${randomObject}`;
+              const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
               const otp = await axios({
                 method: "post",
                 url: "https://apim.djezzy.dz/oauth2/token",
                 data: `scope=openid&client_secret=MVpXHW_ImuMsxKIwrJpoVVMHjRsa&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&otp=${message.message.text}&mobileNumber=213${user[0].num}&grant_type=mobile`,
                 headers: { "content-type":"application/x-www-form-urlencoded" },
-                httpsAgent: httpsAgent,
+                httpsAgent: randAgent,
               });
 
               if (otp.data.access_token != undefined) {
@@ -749,6 +759,8 @@ const onPostBack = async (senderId, message, postback) => {
                     buttons: [
                       botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                     ]});
+                } else if (error.response.status == 400) {
+                  botly.sendText({id: senderId, text: "الرقم الذي أدخلته غير موجود"});
                 } else {
                   console.log("other err: ", error.response.status)
                 }
@@ -795,21 +807,22 @@ const onPostBack = async (senderId, message, postback) => {
 /* ----- HANDELS ----- */
 app.listen(3000, async () => {
   var myip = await axios.get("https://api.ipbase.com/v2/info?ip=");
+  /*
     var info = {
       ip : myip.data.data.ip,
       org: myip.data.data.connection
     };
     console.log(info);
+    */
     var proxip = await axios.get(`https://${process.env.THEAPI}type=get`);
     if (myip.data.data.ip == proxip.data.whitelisted[0]) {
-      console.log("IP Match ✅");
+      console.log(`IP Match ${myip.data.data.ip}✅${proxip.data.whitelisted[0]}`);
     } else {
       var replaceip = await axios.get(`https://${process.env.THEAPI}type=set&ip[]=${proxip.data.whitelisted[0]}&ip[]=${myip.data.data.ip}`);
       if (replaceip.data.status == 200) {
-        console.log("IP Replaced 🔄");
+        console.log(`IP Replaced ${proxip.data.whitelisted[0]}🔄${myip.data.data.ip}`);
       }
     }
-
     console.log("App is on port : 3000 🥳");
     keepAppRunning();
 });
