@@ -289,6 +289,13 @@ function remainingTime(timestamp) {
 
 const onMessage = async (senderId, message) => {
   const timeNow = new Date().getTime();
+  botly.sendButtons({
+    id: senderId,
+    text: "متوقف للصيانة",
+    buttons: [
+      botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+    ]});
+/*
     if (message.message.text) {
       const user = await userDb(senderId);
       if (user[0]) {
@@ -387,7 +394,6 @@ const onMessage = async (senderId, message) => {
                   const randomIndex = Math.floor(Math.random() * ipAddresses.length);
                   console.log(`http://${ipAddresses[randomIndex]}`)
                   const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
-                  
                   if (user[0].lastsms == null || user[0].lastsms < timeNow) {
                     const response = await axios({
                       method: "post",
@@ -706,6 +712,7 @@ const onMessage = async (senderId, message) => {
       } else if (message.message.attachments[0].type == "image" || message.message.attachments[0].type == "audio" || message.message.attachments[0].type == "video") {
         //
       }
+      */
 };
 /* ----- POSTBACK ----- */
 
