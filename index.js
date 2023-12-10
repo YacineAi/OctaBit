@@ -717,6 +717,13 @@ const onMessage = async (senderId, message) => {
 /* ----- POSTBACK ----- */
 
 const onPostBack = async (senderId, message, postback) => {
+  botly.sendButtons({
+    id: senderId,
+    text: "متوقف للصيانة",
+    buttons: [
+      botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+    ]});
+  /*
     if (message.postback){ // Normal (buttons)
         if (postback == "GET_STARTED"){
 
@@ -803,6 +810,7 @@ const onPostBack = async (senderId, message, postback) => {
         } else {
         }
       }
+      */
 };
 /* ----- HANDELS ----- */
 app.listen(3000, async () => {
