@@ -181,9 +181,9 @@ function keepAppRunning() {
         if (queue[0]) {
           queue.forEach(async (user) => {
             const reget = async () => {
-              const proxies = process.env.PROXARR;
-              const randomIndex = Math.floor(Math.random() * proxies.data.length);
-              const randomObject = proxies.data[randomIndex];
+              
+              const randomIndex = Math.floor(Math.random() * process.env.PROXARR.length);
+              const randomObject = process.env.PROXARR[randomIndex];
               const proxy = "socks5://" + `${randomObject}`;
               const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
               const shapNum = "0" + user.num;
@@ -307,9 +307,8 @@ const onMessage = async (senderId, message) => {
                   .then(async (data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                     const reget = async () => {
-                      const proxies = process.env.PROXARR;
-                      const randomIndex = Math.floor(Math.random() * proxies.data.length);
-                      const randomObject = proxies.data[randomIndex];
+                      const randomIndex = Math.floor(Math.random() * process.env.PROXARR.length);
+                      const randomObject = process.env.PROXARR[randomIndex];
                       const proxy = "socks5://" + `${randomObject}`;
                       const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
                       try {
@@ -387,9 +386,8 @@ const onMessage = async (senderId, message) => {
                 try {
                   const timeNow = new Date().getTime();
                   const user = await userDb(senderId);
-                  const proxies = process.env.PROXARR;
-                const randomIndex = Math.floor(Math.random() * proxies.data.length);
-                const randomObject = proxies.data[randomIndex];
+                const randomIndex = Math.floor(Math.random() * process.env.PROXARR.length);
+                const randomObject = process.env.PROXARR[randomIndex];
                 const proxy = "socks5://" + `${randomObject}`;
                 const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
                   if (user[0].lastsms == null || user[0].lastsms < timeNow) {
@@ -443,9 +441,8 @@ const onMessage = async (senderId, message) => {
             const match = message.message.text.match(regex);
             if (user[0].lastsms > timeNow) {
               try {
-                const proxies = process.env.PROXARR;
-                const randomIndex = Math.floor(Math.random() * proxies.data.length);
-                const randomObject = proxies.data[randomIndex];
+                const randomIndex = Math.floor(Math.random() * process.env.PROXARR.length);
+                const randomObject = process.env.PROXARR[randomIndex];
                 const proxy = "socks5://" + `${randomObject}`;
                 const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
                 const otp = await axios({
@@ -462,9 +459,8 @@ const onMessage = async (senderId, message) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
 
                     const reget = async () => {
-                      const proxies = process.env.PROXARR;
-                      const randomIndex = Math.floor(Math.random() * proxies.data.length);
-                      const randomObject = proxies.data[randomIndex];
+                      const randomIndex = Math.floor(Math.random() * process.env.PROXARR.length);
+                      const randomObject = process.env.PROXARR[randomIndex];
                       const proxy = "socks5://" + `${randomObject}`;
                       const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
                       try {
@@ -554,9 +550,8 @@ const onMessage = async (senderId, message) => {
           } else if (message.message.text.length === 6 && !isNaN(message.message.text)) {
             if (user[0].lastsms > timeNow) {
             try {
-              const proxies = process.env.PROXARR;
-              const randomIndex = Math.floor(Math.random() * proxies.data.length);
-              const randomObject = proxies.data[randomIndex];
+              const randomIndex = Math.floor(Math.random() * process.env.PROXARR.length);
+              const randomObject = process.env.PROXARR[randomIndex];
               const proxy = "socks5://" + `${randomObject}`;
               const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
               const otp = await axios({
@@ -574,9 +569,8 @@ const onMessage = async (senderId, message) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
 
                     const reget = async () => {
-                      const proxies = process.env.PROXARR;
-                      const randomIndex = Math.floor(Math.random() * proxies.data.length);
-                      const randomObject = proxies.data[randomIndex];
+                      const randomIndex = Math.floor(Math.random() * process.env.PROXARR.length);
+                      const randomObject = process.env.PROXARR[randomIndex];
                       const proxy = "socks5://" + `${randomObject}`;
                       const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
                       try {
