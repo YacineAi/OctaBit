@@ -385,7 +385,9 @@ const onMessage = async (senderId, message) => {
                   const user = await userDb(senderId);
                   const ipAddresses = process.env.PROXARR.split(',');
                   const randomIndex = Math.floor(Math.random() * ipAddresses.length);
+                  console.log(`http://${ipAddresses[randomIndex]}`)
                   const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+                  
                   if (user[0].lastsms == null || user[0].lastsms < timeNow) {
                     const response = await axios({
                       method: "post",
