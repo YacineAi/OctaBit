@@ -181,7 +181,7 @@ function keepAppRunning() {
         if (queue[0]) {
           queue.forEach(async (user) => {
             const reget = async () => {
-              const proxies = await axios.get(`https://${process.env.MYAPI}/proxy`);
+              const proxies = process.env.PROXARR;
               const randomIndex = Math.floor(Math.random() * proxies.data.length);
               const randomObject = proxies.data[randomIndex];
               const proxy = "socks5://" + `${randomObject}`;
@@ -307,7 +307,7 @@ const onMessage = async (senderId, message) => {
                   .then(async (data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                     const reget = async () => {
-                      const proxies = await axios.get(`https://${process.env.MYAPI}/proxy`);
+                      const proxies = process.env.PROXARR;
                       const randomIndex = Math.floor(Math.random() * proxies.data.length);
                       const randomObject = proxies.data[randomIndex];
                       const proxy = "socks5://" + `${randomObject}`;
@@ -387,7 +387,7 @@ const onMessage = async (senderId, message) => {
                 try {
                   const timeNow = new Date().getTime();
                   const user = await userDb(senderId);
-                  const proxies = await axios.get(`https://${process.env.MYAPI}/proxy`);
+                  const proxies = process.env.PROXARR;
                 const randomIndex = Math.floor(Math.random() * proxies.data.length);
                 const randomObject = proxies.data[randomIndex];
                 const proxy = "socks5://" + `${randomObject}`;
@@ -443,7 +443,7 @@ const onMessage = async (senderId, message) => {
             const match = message.message.text.match(regex);
             if (user[0].lastsms > timeNow) {
               try {
-                const proxies = await axios.get(`https://${process.env.MYAPI}/proxy`);
+                const proxies = process.env.PROXARR;
                 const randomIndex = Math.floor(Math.random() * proxies.data.length);
                 const randomObject = proxies.data[randomIndex];
                 const proxy = "socks5://" + `${randomObject}`;
@@ -462,7 +462,7 @@ const onMessage = async (senderId, message) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
 
                     const reget = async () => {
-                      const proxies = await axios.get(`https://${process.env.MYAPI}/proxy`);
+                      const proxies = process.env.PROXARR;
                       const randomIndex = Math.floor(Math.random() * proxies.data.length);
                       const randomObject = proxies.data[randomIndex];
                       const proxy = "socks5://" + `${randomObject}`;
@@ -554,7 +554,7 @@ const onMessage = async (senderId, message) => {
           } else if (message.message.text.length === 6 && !isNaN(message.message.text)) {
             if (user[0].lastsms > timeNow) {
             try {
-              const proxies = await axios.get(`https://${process.env.MYAPI}/proxy`);
+              const proxies = process.env.PROXARR;
               const randomIndex = Math.floor(Math.random() * proxies.data.length);
               const randomObject = proxies.data[randomIndex];
               const proxy = "socks5://" + `${randomObject}`;
@@ -574,7 +574,7 @@ const onMessage = async (senderId, message) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
 
                     const reget = async () => {
-                      const proxies = await axios.get(`https://${process.env.MYAPI}/proxy`);
+                      const proxies = process.env.PROXARR;
                       const randomIndex = Math.floor(Math.random() * proxies.data.length);
                       const randomObject = proxies.data[randomIndex];
                       const proxy = "socks5://" + `${randomObject}`;
