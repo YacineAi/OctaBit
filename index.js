@@ -387,13 +387,18 @@ const onMessage = async (senderId, message) => {
                 try {
                   const timeNow = new Date().getTime();
                   const user = await userDb(senderId);
+                  const proxies = await axios.get(`https://${process.env.MYAPI}/proxy`);
+                const randomIndex = Math.floor(Math.random() * proxies.data.length);
+                const randomObject = proxies.data[randomIndex];
+                const proxy = "socks5://" + `${randomObject}`;
+                const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
                   if (user[0].lastsms == null || user[0].lastsms < timeNow) {
                     const response = await axios({
                       method: "post",
                       url: "https://apim.djezzy.dz/oauth2/registration",
                       data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + numberString.slice(1),
                       headers: { "content-type":"application/x-www-form-urlencoded" },
-                      httpsAgent: httpsAgent,
+                      httpsAgent: randAgent,
                     });
                     if (response.data.status == 200) {
                       const smsTimer = new Date().getTime() + 2 * 60 * 1000;
