@@ -183,7 +183,7 @@ function keepAppRunning() {
             const reget = async () => {
               const ipAddresses = process.env.PROXARR.split(',');
               const randomIndex = Math.floor(Math.random() * ipAddresses.length);
-              const randAgent = new HttpsProxyAgent(`socks5://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+              const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
               const shapNum = "0" + user.num;
               const hiddenNum = hideText(shapNum);
               try {
@@ -307,7 +307,7 @@ const onMessage = async (senderId, message) => {
                     const reget = async () => {
                       const ipAddresses = process.env.PROXARR.split(',');
                       const randomIndex = Math.floor(Math.random() * ipAddresses.length);
-                      const randAgent = new HttpsProxyAgent(`socks5://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+                      const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
                       try {
                         const activate2GB = await axios({
                           method: "post",
@@ -385,7 +385,7 @@ const onMessage = async (senderId, message) => {
                   const user = await userDb(senderId);
                   const ipAddresses = process.env.PROXARR.split(',');
                   const randomIndex = Math.floor(Math.random() * ipAddresses.length);
-                  const randAgent = new HttpsProxyAgent(`socks5://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+                  const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
                   if (user[0].lastsms == null || user[0].lastsms < timeNow) {
                     const response = await axios({
                       method: "post",
@@ -439,7 +439,7 @@ const onMessage = async (senderId, message) => {
               try {
                 const ipAddresses = process.env.PROXARR.split(',');
                 const randomIndex = Math.floor(Math.random() * ipAddresses.length);
-                const randAgent = new HttpsProxyAgent(`socks5://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+                const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
                 const otp = await axios({
                   method: "post",
                   url: "https://apim.djezzy.dz/oauth2/token",
@@ -456,7 +456,7 @@ const onMessage = async (senderId, message) => {
                     const reget = async () => {
                       const ipAddresses = process.env.PROXARR.split(',');
                       const randomIndex = Math.floor(Math.random() * ipAddresses.length);
-                      const randAgent = new HttpsProxyAgent(`socks5://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+                      const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
                       try {
                         const activate2GB = await axios({
                           method: "post",
@@ -546,7 +546,7 @@ const onMessage = async (senderId, message) => {
             try {
               const ipAddresses = process.env.PROXARR.split(',');
               const randomIndex = Math.floor(Math.random() * ipAddresses.length);
-              const randAgent = new HttpsProxyAgent(`socks5://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+              const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
               const otp = await axios({
                 method: "post",
                 url: "https://apim.djezzy.dz/oauth2/token",
@@ -564,7 +564,7 @@ const onMessage = async (senderId, message) => {
                     const reget = async () => {
                       const ipAddresses = process.env.PROXARR.split(',');
                       const randomIndex = Math.floor(Math.random() * ipAddresses.length);
-                      const randAgent = new HttpsProxyAgent(`socks5://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+                      const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
                       try {
                         const activate2GB = await axios({
                           method: "post",
