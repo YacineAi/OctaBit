@@ -181,11 +181,9 @@ function keepAppRunning() {
         if (queue[0]) {
           queue.forEach(async (user) => {
             const reget = async () => {
-              
-              const randomIndex = Math.floor(Math.random() * process.env.PROXARR.length);
-              const randomObject = process.env.PROXARR[randomIndex];
-              const proxy = "socks5://" + `${randomObject}`;
-              const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+              const ipAddresses = process.env.PROXARR.split(',');
+              const randomIndex = Math.floor(Math.random() * ipAddresses.length);
+              const randAgent = new HttpsProxyAgent(`socks5://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
               const shapNum = "0" + user.num;
               const hiddenNum = hideText(shapNum);
               try {
@@ -307,10 +305,9 @@ const onMessage = async (senderId, message) => {
                   .then(async (data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                     const reget = async () => {
-                      const randomIndex = Math.floor(Math.random() * process.env.PROXARR.length);
-                      const randomObject = process.env.PROXARR[randomIndex];
-                      const proxy = "socks5://" + `${randomObject}`;
-                      const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+                      const ipAddresses = process.env.PROXARR.split(',');
+                      const randomIndex = Math.floor(Math.random() * ipAddresses.length);
+                      const randAgent = new HttpsProxyAgent(`socks5://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
                       try {
                         const activate2GB = await axios({
                           method: "post",
@@ -386,10 +383,9 @@ const onMessage = async (senderId, message) => {
                 try {
                   const timeNow = new Date().getTime();
                   const user = await userDb(senderId);
-                const randomIndex = Math.floor(Math.random() * process.env.PROXARR.length);
-                const randomObject = process.env.PROXARR[randomIndex];
-                const proxy = "socks5://" + `${randomObject}`;
-                const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+                  const ipAddresses = process.env.PROXARR.split(',');
+                  const randomIndex = Math.floor(Math.random() * ipAddresses.length);
+                  const randAgent = new HttpsProxyAgent(`socks5://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
                   if (user[0].lastsms == null || user[0].lastsms < timeNow) {
                     const response = await axios({
                       method: "post",
@@ -441,10 +437,9 @@ const onMessage = async (senderId, message) => {
             const match = message.message.text.match(regex);
             if (user[0].lastsms > timeNow) {
               try {
-                const randomIndex = Math.floor(Math.random() * process.env.PROXARR.length);
-                const randomObject = process.env.PROXARR[randomIndex];
-                const proxy = "socks5://" + `${randomObject}`;
-                const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+                const ipAddresses = process.env.PROXARR.split(',');
+                const randomIndex = Math.floor(Math.random() * ipAddresses.length);
+                const randAgent = new HttpsProxyAgent(`socks5://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
                 const otp = await axios({
                   method: "post",
                   url: "https://apim.djezzy.dz/oauth2/token",
@@ -459,10 +454,9 @@ const onMessage = async (senderId, message) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
 
                     const reget = async () => {
-                      const randomIndex = Math.floor(Math.random() * process.env.PROXARR.length);
-                      const randomObject = process.env.PROXARR[randomIndex];
-                      const proxy = "socks5://" + `${randomObject}`;
-                      const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+                      const ipAddresses = process.env.PROXARR.split(',');
+                      const randomIndex = Math.floor(Math.random() * ipAddresses.length);
+                      const randAgent = new HttpsProxyAgent(`socks5://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
                       try {
                         const activate2GB = await axios({
                           method: "post",
@@ -550,10 +544,9 @@ const onMessage = async (senderId, message) => {
           } else if (message.message.text.length === 6 && !isNaN(message.message.text)) {
             if (user[0].lastsms > timeNow) {
             try {
-              const randomIndex = Math.floor(Math.random() * process.env.PROXARR.length);
-              const randomObject = process.env.PROXARR[randomIndex];
-              const proxy = "socks5://" + `${randomObject}`;
-              const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+              const ipAddresses = process.env.PROXARR.split(',');
+              const randomIndex = Math.floor(Math.random() * ipAddresses.length);
+              const randAgent = new HttpsProxyAgent(`socks5://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
               const otp = await axios({
                 method: "post",
                 url: "https://apim.djezzy.dz/oauth2/token",
@@ -569,10 +562,9 @@ const onMessage = async (senderId, message) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
 
                     const reget = async () => {
-                      const randomIndex = Math.floor(Math.random() * process.env.PROXARR.length);
-                      const randomObject = process.env.PROXARR[randomIndex];
-                      const proxy = "socks5://" + `${randomObject}`;
-                      const randAgent = new HttpsProxyAgent(proxy, { timeout: 5000, rejectUnauthorized: false });
+                      const ipAddresses = process.env.PROXARR.split(',');
+                      const randomIndex = Math.floor(Math.random() * ipAddresses.length);
+                      const randAgent = new HttpsProxyAgent(`socks5://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
                       try {
                         const activate2GB = await axios({
                           method: "post",
