@@ -289,13 +289,6 @@ function remainingTime(timestamp) {
 
 const onMessage = async (senderId, message) => {
   const timeNow = new Date().getTime();
-  botly.sendButtons({
-    id: senderId,
-    text: "متوقف للصيانة",
-    buttons: [
-      botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-    ]});
-/*
     if (message.message.text) {
       const user = await userDb(senderId);
       if (user[0]) {
@@ -712,18 +705,10 @@ const onMessage = async (senderId, message) => {
       } else if (message.message.attachments[0].type == "image" || message.message.attachments[0].type == "audio" || message.message.attachments[0].type == "video") {
         //
       }
-      */
 };
 /* ----- POSTBACK ----- */
 
 const onPostBack = async (senderId, message, postback) => {
-  botly.sendButtons({
-    id: senderId,
-    text: "متوقف للصيانة",
-    buttons: [
-      botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-    ]});
-  /*
     if (message.postback){ // Normal (buttons)
         if (postback == "GET_STARTED"){
 
@@ -810,7 +795,6 @@ const onPostBack = async (senderId, message, postback) => {
         } else {
         }
       }
-      */
 };
 /* ----- HANDELS ----- */
 app.listen(3000, async () => {
