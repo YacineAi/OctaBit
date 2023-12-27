@@ -181,19 +181,13 @@ function keepAppRunning() {
         if (queue[0]) {
           queue.forEach(async (user) => {
             const reget = async () => {
-              const ipAddresses = process.env.PROXARR.split(',');
-              const randomIndex = Math.floor(Math.random() * ipAddresses.length);
-              const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+              const servers = process.env.EPOINTS.split(',');
+              const randomIndex = Math.floor(Math.random() * servers.length);
+              //const randAgent = new HttpsProxyAgent(`http://${servers[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
               const shapNum = "0" + user.num;
               const hiddenNum = hideText(shapNum);
               try {
-                const activate2GB = await axios({
-                  method: "post",
-                  url: `https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user.num}/subscription-product?include=`,
-                  data: twoGb,
-                  headers: { 'Authorization': `Bearer ${user.token}` },
-                  httpsAgent: randAgent,
-                });
+                const activate2GB = await axios.get(`https://${servers[randomIndex]}/2g?num=${user.num}&token=${user.token}`);
                 await deleteQueue(user.logtime)
                 .then((data, error) => {
                   if (activate2GB.status == 200) {
@@ -305,18 +299,11 @@ const onMessage = async (senderId, message) => {
                   .then(async (data, error) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                     const reget = async () => {
-                      const ipAddresses = process.env.PROXARR.split(',');
-                      const randomIndex = Math.floor(Math.random() * ipAddresses.length);
-                      const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+                      const servers = process.env.EPOINTS.split(',');
+                      const randomIndex = Math.floor(Math.random() * servers.length);
+                      //const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
                       try {
-                        const activate2GB = await axios({
-                          method: "post",
-                          url: `https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${queue[0].num}/subscription-product?include=`,
-                          data: twoGb,
-                          headers: { 'Authorization': `Bearer ${queue[0].token}` },
-                          httpsAgent: randAgent,
-                        });
-  
+                        const activate2GB = await axios.get(`https://${servers[randomIndex]}/2g?num=${queue[0].num}&token=${queue[0].token}`);
                         await deleteQueue(queue[0].logtime)
                         .then((data, error) => {
                           if (activate2GB.status == 200) {
@@ -383,18 +370,11 @@ const onMessage = async (senderId, message) => {
                 try {
                   const timeNow = new Date().getTime();
                   const user = await userDb(senderId);
-                  const ipAddresses = process.env.PROXARR.split(',');
-                  const randomIndex = Math.floor(Math.random() * ipAddresses.length);
-                  console.log(`http://${ipAddresses[randomIndex]}`)
-                  const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+                  const servers = process.env.EPOINTS.split(',');
+                  const randomIndex = Math.floor(Math.random() * servers.length);
+                  //const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
                   if (user[0].lastsms == null || user[0].lastsms < timeNow) {
-                    const response = await axios({
-                      method: "post",
-                      url: "https://apim.djezzy.dz/oauth2/registration",
-                      data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + numberString.slice(1),
-                      headers: { "content-type":"application/x-www-form-urlencoded" },
-                      httpsAgent: randAgent,
-                    });
+                    const response = await axios.get(`https://${servers[randomIndex]}/sendotp?num=${numberString.slice(1)}`);
                     if (response.data.status == 200) {
                       const smsTimer = new Date().getTime() + 2 * 60 * 1000;
                       await updateUser(senderId, {step: "sms", num: numberString.slice(1), lastsms :smsTimer})
@@ -438,16 +418,10 @@ const onMessage = async (senderId, message) => {
             const match = message.message.text.match(regex);
             if (user[0].lastsms > timeNow) {
               try {
-                const ipAddresses = process.env.PROXARR.split(',');
-                const randomIndex = Math.floor(Math.random() * ipAddresses.length);
-                const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
-                const otp = await axios({
-                  method: "post",
-                  url: "https://apim.djezzy.dz/oauth2/token",
-                  data: `scope=openid&client_secret=MVpXHW_ImuMsxKIwrJpoVVMHjRsa&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&otp=${match[1]}&mobileNumber=213${user[0].num}&grant_type=mobile`,
-                  headers: { "content-type":"application/x-www-form-urlencoded" },
-                  httpsAgent: randAgent,
-                });
+                const servers = process.env.EPOINTS.split(',');
+                const randomIndex = Math.floor(Math.random() * servers.length);
+                //const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+                const otp = await axios.get(`https://${servers[randomIndex]}/verifyotp?num=${user[0].num}&otp=${match[1]}`);
 
                 if (otp.data.access_token != undefined) {
                   await updateUser(senderId, {step: null , lastsms: null})
@@ -455,17 +429,12 @@ const onMessage = async (senderId, message) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
 
                     const reget = async () => {
-                      const ipAddresses = process.env.PROXARR.split(',');
-                      const randomIndex = Math.floor(Math.random() * ipAddresses.length);
-                      const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+                      const servers = process.env.EPOINTS.split(',');
+                      const randomIndex = Math.floor(Math.random() * servers.length);
+                      //const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+                      
                       try {
-                        const activate2GB = await axios({
-                          method: "post",
-                          url: `https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`,
-                          data: twoGb,
-                          headers: { 'Authorization': `Bearer ${otp.data.access_token}` },
-                          httpsAgent: randAgent,
-                        });
+                        const activate2GB = await axios.get(`https://${servers[randomIndex]}/2g?num=${user[0].num}&token=${otp.data.access_token}`);
 
                         if (activate2GB.status == 200) {
                           botly.sendButtons({
@@ -545,16 +514,10 @@ const onMessage = async (senderId, message) => {
           } else if (message.message.text.length === 6 && !isNaN(message.message.text)) {
             if (user[0].lastsms > timeNow) {
             try {
-              const ipAddresses = process.env.PROXARR.split(',');
-              const randomIndex = Math.floor(Math.random() * ipAddresses.length);
-              const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
-              const otp = await axios({
-                method: "post",
-                url: "https://apim.djezzy.dz/oauth2/token",
-                data: `scope=openid&client_secret=MVpXHW_ImuMsxKIwrJpoVVMHjRsa&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&otp=${message.message.text}&mobileNumber=213${user[0].num}&grant_type=mobile`,
-                headers: { "content-type":"application/x-www-form-urlencoded" },
-                httpsAgent: randAgent,
-              });
+              const servers = process.env.EPOINTS.split(',');
+              const randomIndex = Math.floor(Math.random() * servers.length);
+              //const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+              const otp = await axios.get(`https://${servers[randomIndex]}/verifyotp?num=${user[0].num}&otp=${message.message.text}`);
 
               if (otp.data.access_token != undefined) {
                 console.log("Token : ", otp.data.access_token)
@@ -563,17 +526,11 @@ const onMessage = async (senderId, message) => {
                     if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
 
                     const reget = async () => {
-                      const ipAddresses = process.env.PROXARR.split(',');
-                      const randomIndex = Math.floor(Math.random() * ipAddresses.length);
-                      const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
+                      const servers = process.env.EPOINTS.split(',');
+                      const randomIndex = Math.floor(Math.random() * servers.length);
+                      //const randAgent = new HttpsProxyAgent(`http://${ipAddresses[randomIndex]}`, { timeout: 5000, rejectUnauthorized: false });
                       try {
-                        const activate2GB = await axios({
-                          method: "post",
-                          url: `https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213${user[0].num}/subscription-product?include=`,
-                          data: twoGb,
-                          headers: { 'Authorization': `Bearer ${otp.data.access_token}` },
-                          httpsAgent: randAgent,
-                        });
+                        const activate2GB = await axios.get(`https://${servers[randomIndex]}/2g?num=${user[0].num}&token= ${otp.data.access_token}`);
                         //console.log("552 Log : ", activate2GB.data)
                         if (activate2GB.status == 200) {
                           botly.sendButtons({
@@ -720,14 +677,10 @@ const onPostBack = async (senderId, message, postback) => {
             try {
               const timeNow = new Date().getTime();
               const user = await userDb(senderId);
+              const servers = process.env.EPOINTS.split(',');
+              const randomIndex = Math.floor(Math.random() * servers.length);
               if (user[0].lastsms == null && user[0].num != null || user[0].lastsms < timeNow && user[0].num != null) {
-                const response = await axios({
-                  method: "post",
-                  url: "https://apim.djezzy.dz/oauth2/registration",
-                  data: "scope=smsotp&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&msisdn=213" + user[0].num,
-                  headers: { "content-type":"application/x-www-form-urlencoded" },
-                  httpsAgent: httpsAgent,
-                });
+                const response = await axios.get(`https://${servers[randomIndex]}/sendotp?num=${user[0].num}`);
                 if (response.data.status == 200) {
                   const smsTimer = new Date().getTime() + 2 * 60 * 1000;
                   await updateUser(senderId, {step: "sms", lastsms :smsTimer})
