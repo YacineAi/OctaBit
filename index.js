@@ -7,7 +7,9 @@ const https = require('https');
 const { SocksProxyAgent } = require("socks-proxy-agent");
 const { HttpsProxyAgent  } = require('https-proxy-agent');
 
-const httpsAgent = new SocksProxyAgent(process.env.PROXY);
+//const httpsAgent = new SocksProxyAgent(process.env.PROXY);
+
+
 const botly = new Botly({
 	accessToken: process.env.PAGE_ACCESS_TOKEN,
 	notificationType: Botly.CONST.REGULAR,
