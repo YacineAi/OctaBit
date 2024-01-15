@@ -9,7 +9,6 @@ const { HttpsProxyAgent  } = require('https-proxy-agent');
 
 //const httpsAgent = new SocksProxyAgent(process.env.PROXY);
 
-
 const botly = new Botly({
 	accessToken: process.env.PAGE_ACCESS_TOKEN,
 	notificationType: Botly.CONST.REGULAR,
@@ -58,7 +57,7 @@ app.get("/", (req, res) => {
     };
   
     res.render("index", { memoryUsage, uptimeString, formatBytes, osInfo });
-  });
+});
 
 /* ----- MAGIC ----- */
 app.post('/webhook', (req, res) => {
@@ -177,7 +176,7 @@ function hideText(str) {
 function keepAppRunning() {
   setInterval(async () => {
     https.get(`${process.env.RENDER_EXTERNAL_URL}/ping`, async (resp) => {
-      if (resp.statusCode === 200) {
+      if (resp.statusCode == 200) {
         console.log('Ping successful');
         const queue = await queueDb();
         if (queue[0]) {
@@ -753,23 +752,6 @@ const onPostBack = async (senderId, message, postback) => {
 };
 /* ----- HANDELS ----- */
 app.listen(3000, async () => {
-  var myip = await axios.get("https://api.ipbase.com/v2/info?ip=");
-  /*
-    var info = {
-      ip : myip.data.data.ip,
-      org: myip.data.data.connection
-    };
-    console.log(info);
-    */
-    var proxip = await axios.get(`https://${process.env.THEAPI}type=get`);
-    if (myip.data.data.ip == proxip.data.whitelisted[0]) {
-      console.log(`IP Match ${myip.data.data.ip}✅${proxip.data.whitelisted[0]}`);
-    } else {
-      var replaceip = await axios.get(`https://${process.env.THEAPI}type=set&ip[]=${proxip.data.whitelisted[0]}&ip[]=${myip.data.data.ip}`);
-      if (replaceip.data.status == 200) {
-        console.log(`IP Replaced ${proxip.data.whitelisted[0]}🔄${myip.data.data.ip}`);
-      }
-    }
     console.log("App is on port : 3000 🥳");
     keepAppRunning();
 });
