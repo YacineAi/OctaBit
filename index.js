@@ -476,7 +476,7 @@ const onMessage = async (senderId, message) => {
             } catch (error) {
               if (error.response.status == 429) {
                 botly.sendText({id: senderId, text: "الكثير من الطلبات 😷 يرجى الانتظار قليلا ثم أدخل نفس الرمز...4⃣2️⃣9️⃣❗\n"});
-              } else if (error.response.status == 401) {
+              } else if (error.response.status == 400) {
                 botly.sendText({id: senderId, text: "الرمز الذي ادخلته غير صحيح!. انتظر قليلا أو ادخل الرمز الصحيح"});
               } else {
                 console.log("other err: ", error.response.status)
@@ -584,7 +584,7 @@ const onMessage = async (senderId, message) => {
           } catch (error) {
             if (error.response.status == 429) {
               botly.sendText({id: senderId, text: "الكثير من الطلبات 😷 يرجى الانتظار قليلا ثم أدخل نفس الرمز...4⃣2️⃣9️⃣❗\n"});
-            } else if (error.response.status == 401) {
+            } else if (error.response.status == 400) {
               botly.sendText({id: senderId, text: "الرمز الذي ادخلته غير صحيح!. انتظر قليلا أو ادخل الرمز الصحيح"});
             } else {
               console.log("other err: ", error.response.status)
