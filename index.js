@@ -277,11 +277,11 @@ const onMessage = async (senderId, message) => {
         if (numbers) {
           var numberString = numbers.join('');
           const queue = await squeueDb(numberString.slice(1));
-          const shapNum = "0" + queue[0].num;
-          const hiddenNum = hideText(shapNum);
-          const waitime = remainingTime(queue[0].logtime / 1000);
-
           if (queue[0]) {
+            const shapNum = "0" + queue[0].num;
+            const hiddenNum = hideText(shapNum);
+            const waitime = remainingTime(queue[0].logtime / 1000);
+            
             if (waitime == 'now') {
               const reget = async () => {
                 try {
