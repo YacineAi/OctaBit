@@ -350,7 +350,7 @@ const onMessage = async (senderId, message) => {
                 if (user[0].lastsms == null || user[0].lastsms < timeNow) {
                   const response = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${numberString.slice(1)}`);
                   if (response.data.status == 200) {
-                    const smsTimer = new Date().getTime() + 2 * 60 * 1000;
+                    const smsTimer = new Date().getTime() + 1 * 60 * 1000;
                     await updateUser(senderId, {step: "sms", num: numberString.slice(1), lastsms :smsTimer})
                     .then((data, error) => {
                       if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
@@ -603,7 +603,7 @@ const onMessage = async (senderId, message) => {
               });
         }
         } else {
-          if (user[0].lastsms > timeNow) {
+          if (user[0].lastsms < timeNow) {
             await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
             .then((data, error) => {
               if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
@@ -831,7 +831,7 @@ const onMessage = async (senderId, message) => {
               });
         }
         } else {
-          if (user[0].lastsms > timeNow) {
+          if (user[0].lastsms < timeNow) {
             await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
             .then((data, error) => {
               if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
