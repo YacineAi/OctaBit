@@ -281,7 +281,7 @@ const onMessage = async (senderId, message) => {
             const shapNum = "0" + queue[0].num;
             const hiddenNum = hideText(shapNum);
             const waitime = remainingTime(queue[0].logtime / 1000);
-            
+
             if (waitime == 'now') {
               const reget = async () => {
                 try {
@@ -476,6 +476,8 @@ const onMessage = async (senderId, message) => {
             } catch (error) {
               if (error.response.status == 429) {
                 botly.sendText({id: senderId, text: "الكثير من الطلبات 😷 يرجى الانتظار قليلا ثم أدخل نفس الرمز...4⃣2️⃣9️⃣❗\n"});
+              } else if (error.response.status == 401) {
+                botly.sendText({id: senderId, text: "الرمز الذي ادخلته غير صحيح!. انتظر قليلا أو ادخل الرمز الصحيح"});
               } else {
                 console.log("other err: ", error.response.status)
               }
@@ -582,6 +584,8 @@ const onMessage = async (senderId, message) => {
           } catch (error) {
             if (error.response.status == 429) {
               botly.sendText({id: senderId, text: "الكثير من الطلبات 😷 يرجى الانتظار قليلا ثم أدخل نفس الرمز...4⃣2️⃣9️⃣❗\n"});
+            } else if (error.response.status == 401) {
+              botly.sendText({id: senderId, text: "الرمز الذي ادخلته غير صحيح!. انتظر قليلا أو ادخل الرمز الصحيح"});
             } else {
               console.log("other err: ", error.response.status)
             }
