@@ -326,7 +326,6 @@ const onMessage = async (senderId, message) => {
                             ]});
                         });
                       } else {
-                        console.log("40x :", error.response.status)
                         await deleteQueue(queue[0].logtime)
                         .then((data, error) => {
                           botly.sendButtons({
@@ -335,6 +334,7 @@ const onMessage = async (senderId, message) => {
                             buttons: [
                               botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                             ]});
+                            console.log("40x :", error.response.status);
                         });
                       }
                     })();
@@ -456,7 +456,6 @@ const onMessage = async (senderId, message) => {
                               ]});
                             });
                       } else {
-                        console.log("40x :", error.response.status)
                         await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
                           .then((data, error) => {
                             if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
@@ -466,6 +465,7 @@ const onMessage = async (senderId, message) => {
                               buttons: [
                                 botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                               ]});
+                              console.log("40x :", error.response.status);
                             });
                       }
                     })();
@@ -564,7 +564,6 @@ const onMessage = async (senderId, message) => {
                             ]});
                           });
                     } else {
-                      console.log("40x :", error.response.status)
                       await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
                         .then((data, error) => {
                           if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
@@ -574,6 +573,7 @@ const onMessage = async (senderId, message) => {
                             buttons: [
                               botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                             ]});
+                            console.log("40x :", error.response.status);
                           });
                     }
                   })();
@@ -688,7 +688,6 @@ const onMessage = async (senderId, message) => {
                               ]});
                             });
                       } else {
-                        console.log("40x :", error.response.status)
                         await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
                           .then((data, error) => {
                             if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
@@ -698,6 +697,7 @@ const onMessage = async (senderId, message) => {
                               buttons: [
                                 botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                               ]});
+                              console.log("40x :", error.response.status);
                             });
                       }
                     })();
@@ -794,7 +794,6 @@ const onMessage = async (senderId, message) => {
                             ]});
                           });
                     } else {
-                      console.log("40x :", error.response.status)
                       await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
                         .then((data, error) => {
                           if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
@@ -804,6 +803,7 @@ const onMessage = async (senderId, message) => {
                             buttons: [
                               botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                             ]});
+                            console.log("40x :", error.response.status);
                           });
                     }
                   })();
