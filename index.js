@@ -392,6 +392,7 @@ const onMessage = async (senderId, message) => {
         botly.sendText({id: senderId, text: "يرجى إدخال أرقام جيزي فقط !📱"});
       }
       } else if (user[0].step == "sms") {
+        var numbers = message.message.text.match(/\d+/g).join('');
         /* COPY TEXT */
         if (message.message.text.startsWith("Verification Code")) {
           const regex = /Verification Code : (\d+)\./;
@@ -495,10 +496,10 @@ const onMessage = async (senderId, message) => {
               });
           }
           /* SMS TEXT */
-        } else if (message.message.text.length === 6 && !isNaN(message.message.text)) {
+        } else if (numbers.length === 6 && !isNaN(numbers)) {
           if (user[0].lastsms > timeNow) {
           try {
-            const otp = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${message.message.text}`);
+            const otp = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${numbers}`);
 
             if (otp.data.access_token != undefined) {
               try {
@@ -625,6 +626,7 @@ const onMessage = async (senderId, message) => {
         }
       } else if (user[0].step == "429") {
         /* COPY TEXT */
+        var numbers = message.message.text.match(/\d+/g).join('');
         if (message.message.text.startsWith("Verification Code")) {
           const regex = /Verification Code : (\d+)\./;
           const match = message.message.text.match(regex);
@@ -725,10 +727,10 @@ const onMessage = async (senderId, message) => {
               });
           }
           /* SMS TEXT */
-        } else if (message.message.text.length === 6 && !isNaN(message.message.text)) {
+        } else if (numbers.length === 6 && !isNaN(numbers)) {
           if (user[0].lastsms > timeNow) {
           try {
-            const otp = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${message.message.text}`);
+            const otp = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${numbers}`);
 
             if (otp.data.access_token != undefined) {
               try {
