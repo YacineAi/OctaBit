@@ -384,12 +384,39 @@ const onMessage = async (senderId, message) => {
                   ]});
               }
             }
-          } else {
-            botly.sendText({id: senderId, text: "يرجى إدخال أرقام جيزي فقط !📱"});
+          } else if (numberString.length == 10 && !isNaN(numberString) && numberString.startsWith("05")) {
+            try {
+              if (user[0].lastsms == null || user[0].lastsms < timeNow) {
+                const response = await axios.get(`https://${process.env.OREDSERV}/sendotp?num=${numberString.slice(1)}`);
+                if (response.data.status == "ok") {
+                  const smsTimer = new Date().getTime() + 5 * 60 * 1000;
+                  await updateUser(senderId, {step: "smsOoredoo", num: numberString.slice(1), lastsms :smsTimer})
+                  .then((data, error) => {
+                    if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                    botly.sendText({id: senderId, text: "تم إرسال الرمز إلى الرقم 💬\nيرجى نسخ الرسالة 📋 أو كتابة الارقام التي وصلتك 🔢"});
+                  });
+                } else if (response.data.status == "wrong") {
+                  botly.sendText({id: senderId, text: "هذا الرقم غير مؤهل لإستقبال الهدية اليومية 🎁❌ يرجى إدخال رقم عادي و ليس يوز."});
+                } else { // 500
+                  botly.sendText({id: senderId, text: "502!\nيوجد مشكلة في سيرفر اوريدو 🔽 (قد يدوم الامر لساعات) يرجى المحاولة في وقت اخر."});
+                }
+              } else {
+                botly.sendButtons({
+                  id: senderId,
+                  text: "يرجى إدخال الرمز المتكون من 6 ارقام الذي وصلك.",
+                  buttons: [
+                    botly.createPostbackButton("إلغاء العملية ❌", "del")
+                  ]});
+          }
+        } catch (error) {
+          console.log("ooredoo err otp : ", error.response.status)
+          }
+        } else {
+            botly.sendText({id: senderId, text: "يرجى إدخال أرقام جيزي او أوريدو فقط !📱"});
           }
         }
       } else {
-        botly.sendText({id: senderId, text: "يرجى إدخال أرقام جيزي فقط !📱"});
+        botly.sendText({id: senderId, text: "يرجى إدخال أرقام جيزي او أوريدو فقط !📱"});
       }
       } else if (user[0].step == "sms") {
         var numbers = message.message.text.match(/\d+/g).join('');
@@ -853,6 +880,96 @@ const onMessage = async (senderId, message) => {
               ]});
           }
         }
+      } else if (user[0].step == "smsOoredoo") {
+        if (/\d+/.test(message.message.text)) {
+          var numbers = message.message.text.match(/\d+/g).join('');
+          if (numbers.length === 6 && !isNaN(numbers)) {
+            if (user[0].lastsms > new Date().getTime()) {
+              try {
+                const otp = await axios.get(`https://${process.env.OREDSERV}/giftotp?num=${user[0].num}&otp=${numbers}`);
+                if (otp.data.success == true) {
+                  if (otp.data.data.giftName == "0Mo" || otp.data.data.validityHour == null) { // nothing
+                    await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
+                    .then((data, error) => {
+                      if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                      botly.sendText({id: senderId, text: "للأسف 😔.\nلم تربح شيئ اليوم 💔.\n• عد غدا 🕑 لتجربة حظك مرة اخرى 🤭🎁.\n\nو لا تنسى متابعة المطور 💜:\nfacebook.com/0xNoti"});
+                    });
+                  } else { // 
+                    await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
+                    .then((data, error) => {
+                      if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                      botly.sendButtons({
+                        id: senderId,
+                        text: `مبروك 🎁🥳\nلقد ربحت ${otp.data.data.giftName} صالحة لمدة ${otp.data.data.validityHour} ساعات 🕑.\nعد غدا للحصول على هدية أخرى 😁.\n\nو لا تنسى متابعة المطور 💜:\nfacebook.com/0xNoti`,
+                        buttons: [
+                          botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                        ]});
+                    });
+                  }
+                } else {
+                  if (otp.data.cause == "24h") {
+                    await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
+                    .then((data, error) => {
+                      if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                      botly.sendText({id: senderId, text: `يبدو أنك إستفدت من الهدية اليومية! 🎁\nيرجى المحاولة بعد ${otp.data.remain} 💜😁.`});
+                    });
+                  } else if (otp.data.cause == "down") {
+                    await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
+                    .then((data, error) => {
+                      if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                      botly.sendText({id: senderId, text: "502!\nيوجد مشكلة في سيرفر اوريدو 🔽 (قد يدوم الامر لساعات) يرجى المحاولة في وقت اخر."});
+                    });
+                  } else {
+                    await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
+                    .then((data, error) => {
+                      if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                      botly.sendButtons({
+                        id: senderId,
+                        text: "حدث خطأ غير معروف. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
+                        buttons: [
+                          botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                        ]});
+                    });
+                  }
+                }
+                } catch (error) {
+                  if (error.response.status == 401) {
+                    botly.sendButtons({
+                      id: senderId,
+                      text: "الرمز الذي أدخلته غير صحيح ❌",
+                      buttons: [
+                        botly.createPostbackButton("إلغاء العملية ❌", "del")
+                      ]});
+                  } else if (error.response.status == 502 || error.response.status == 504) {
+                    botly.sendText({id: senderId, text: "خطأ في سيرفر أوريدو. أعد ادخال الرمز ℹ️"});
+                  } else {
+                    console.log("ERR access_token : ", error.response.status);
+                  }
+                }
+              } else {
+                await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
+                .then((data, error) => {
+                  if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                  botly.sendText({id: senderId, text: "ℹ️ إنتهى وقت ادخال الرمز. المرجو طلب رمز اخر."});
+                });
+              }
+              } else {
+                botly.sendButtons({
+                  id: senderId,
+                  text: "يرجى إدخال الرمز المتكون من 6 ارقام الذي وصلك.",
+                  buttons: [
+                    botly.createPostbackButton("إلغاء العملية ❌", "del")
+                  ]});
+              }
+              } else {
+                botly.sendButtons({
+                  id: senderId,
+                  text: "يرجى إدخال الرمز المتكون من 6 ارقام الذي وصلك.",
+                  buttons: [
+                    botly.createPostbackButton("إلغاء العملية ❌", "del")
+                  ]});
+              }
+            
       }
     } else {
       await createUser({uid: senderId, step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
@@ -885,7 +1002,12 @@ const onPostBack = async (senderId, message, postback) => {
             botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
           ]});
         });
-      } else if (postback == "1") {
+      } else if (postback == "del") {
+        await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
+        .then((data, error) => {
+          if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+          botly.sendText({id: senderId, text: "تم إلغاء العملية ✅"});
+        });
       } else if (postback == "2") {
       } else if (postback == "3") {
           botly.sendText({id: senderId, text: "حسنا. يرجى إدخال رقم آخر 📱"});
