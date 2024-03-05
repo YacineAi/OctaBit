@@ -342,7 +342,16 @@ const onMessage = async (senderId, message) => {
               };
               reget();
             } else {
-              botly.sendText({id: senderId, text: `المستعمل ${hiddenNum} 📱\nأنت في قائمة الانتظار 📋😴\nيرجى إنتظار ${waitime} وسوف تتلقى الرد 😀.`});
+              if (queue[0].uid == senderId) {
+                botly.sendButtons({
+                  id: senderId,
+                  text: `المستعمل ${hiddenNum} 📱\nأنت في قائمة الانتظار 📋😴\nيرجى إنتظار ${waitime} وسوف تتلقى الرد 😀.`,
+                  buttons: [
+                    botly.createPostbackButton("إلغاء ❌", queue[0].logtime)
+                  ]});
+              } else {
+                botly.sendText({id: senderId, text: `المستعمل ${hiddenNum} 📱\nأنت في قائمة الانتظار 📋😴\nيرجى إنتظار ${waitime} وسوف تتلقى الرد 😀.`});
+              }
             }
           } else {
             if (numberString.length == 10 && !isNaN(numberString) && numberString.startsWith("07")) {
@@ -1008,7 +1017,16 @@ const onPostBack = async (senderId, message, postback) => {
           if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
           botly.sendText({id: senderId, text: "تم إلغاء العملية ✅"});
         });
-      } else if (postback == "2") {
+      } else if (message.postback.title == "إلغاء ❌") {
+        await deleteQueue(postback)
+        .then((data, error) => {
+          botly.sendButtons({
+            id: senderId,
+            text: "تم حذف رقمك من قائمة الانتظار 📝✅",
+            buttons: [
+              botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+            ]});
+          });
       } else if (postback == "3") {
           botly.sendText({id: senderId, text: "حسنا. يرجى إدخال رقم آخر 📱"});
       } else if (postback.startsWith("1")) {
