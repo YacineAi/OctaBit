@@ -378,6 +378,13 @@ const onMessage = async (senderId, message) => {
             }
           } else {
             if (numberString.length == 10 && !isNaN(numberString) && numberString.startsWith("07")) {
+              botly.sendButtons({
+                id: senderId,
+                text: "إضافة ارقام جيزي متوقفة للصيانة الرجاء المحاولة بعد ساعة",
+                buttons: [
+                  botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                ]});
+              /*
               try {
                 if (user[0].lastsms == null || user[0].lastsms < timeNow) {
                   const response = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${numberString.slice(1)}`, { headers : head});
@@ -416,6 +423,7 @@ const onMessage = async (senderId, message) => {
                   ]});
               }
             }
+            */
           } else if (numberString.length == 10 && !isNaN(numberString) && numberString.startsWith("05")) {
             try {
               if (user[0].lastsms == null || user[0].lastsms < timeNow) {
