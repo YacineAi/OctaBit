@@ -230,11 +230,8 @@ setInterval(async () => {
                     botly.sendText({id: user.uid, text: `المستعمل برقم ${hiddenNum}! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅`});
                   });
                 } else if (error.response.status == 403) {
-                  await updateQueue(user.logtime, {logtime: new Date().getTime() + 5 * 60 * 1000})
-                    .then((data, error) => {
-                      if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                      console.log("ERR 403 in Queue 5 min ADD :", user.num, user.token)
-                    });
+                  reget();
+                  console.log("ERR 403 in Queue RTRY :", user.num, user.token)
                 } else if (error.response.status == 404) {
                   await deleteQueue(user.logtime)
                   .then(async (data, error) => {
