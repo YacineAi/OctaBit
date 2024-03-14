@@ -168,6 +168,21 @@ const { data, error } = await supabase
   }
 };
 
+
+
+async function updateQueue(uid, update) {
+  const { data, error } = await supabase
+    .from('queue')
+    .update( update )
+    .eq('logtime', id);
+
+    if (error) {
+      throw new Error('Error updating user : ', error);
+    } else {
+      return data
+    }
+};
+
 function hideText(str) {
 const visiblePart = str.substring(0, 2);
 const hiddenPart = 'x'.repeat(str.length - 4);
@@ -215,10 +230,11 @@ setInterval(async () => {
                     botly.sendText({id: user.uid, text: `المستعمل برقم ${hiddenNum}! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅`});
                   });
                 } else if (error.response.status == 403) {
-                  await deleteQueue(user.logtime)
-                  .then(async (data, error) => {
-                    console.log("ERR 403 in Queue : ", user.num, user.token)
-                  });
+                  await updateQueue(user.logtime, {logtime: new Date().getTime() + 5 * 60 * 1000})
+                    .then((data, error) => {
+                      if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                      console.log("ERR 403 in Queue 5 min ADD :", user.num, user.token)
+                    });
                 } else if (error.response.status == 404) {
                   await deleteQueue(user.logtime)
                   .then(async (data, error) => {
