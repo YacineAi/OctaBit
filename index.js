@@ -221,6 +221,7 @@ setInterval(async () => {
               }
             } catch (error) {
               (async () => {
+                console.log("40x :", error.response);
                 if (error.response.status == 429) {
                   reget();
                   console.log("429 in KR");
@@ -327,6 +328,7 @@ const onMessage = async (senderId, message) => {
                       }
                   } catch (error) {
                     (async () => {
+                      console.log("40x :", error.response);
                       if (error.response.status == 429) {
                         console.log("429 now Poz Retrying...");
                         reget();
