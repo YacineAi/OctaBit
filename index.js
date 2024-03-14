@@ -174,7 +174,7 @@ async function updateQueue(uid, update) {
   const { data, error } = await supabase
     .from('queue')
     .update( update )
-    .eq('logtime', id);
+    .eq('logtime', uid);
 
     if (error) {
       throw new Error('Error updating user : ', error);
