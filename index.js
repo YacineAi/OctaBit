@@ -5,6 +5,7 @@ const axios = require("axios");
 const os = require('os');
 const https = require('https');
 const servers = process.env.EPOINTS.split(',');
+const { HttpsProxyAgent  } = require('https-proxy-agent');
 
 const botly = new Botly({
 	accessToken: process.env.PAGE_ACCESS_TOKEN,
@@ -14,6 +15,14 @@ const botly = new Botly({
 
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SB_URL, process.env.SB_KEY, { auth: { persistSession: false} });
+
+// http://41.111.243.134:80
+
+/* ----- ENJOY HBB HAHAHAHAHA ----- */
+
+const httpsAgent = new HttpsProxyAgent(process.env.ALGTELECOMSERVER, { timeout: 10000, rejectUnauthorized: false });
+
+/* ----- YAW 9iW ----- */
 
 /* ----- ESSENTIALS ----- */
 app.use(express.static("public"));
@@ -405,7 +414,7 @@ const onMessage = async (senderId, message) => {
                     botly.sendText({id: senderId, text: "تم إرسال الرمز إلى الرقم 💬\nيرجى نسخ الرسالة 📋 أو كتابة الارقام التي وصلتك 🔢"});
                   });
                 } else if (response.data.status == "wrong") {
-                  botly.sendText({id: senderId, text: "هذا الرقم غير مؤهل لإستقبال الهدية اليومية 🎁❌ يرجى إدخال رقم عادي و ليس Yooz."});
+                  botly.sendText({id: senderId, text: "هذا الرقم غير مؤهل للحصول على هدية بعد 🎁.\nيرجى الانتظار ⌛️ حتى يتم إضافته للأرقام المقبولة في My Ooredoo."});
                 } else { // 500
                   botly.sendText({id: senderId, text: "502!\nيوجد مشكلة في سيرفر اوريدو 🔽 (قد يدوم الامر لساعات) يرجى المحاولة في وقت اخر."});
                 }
