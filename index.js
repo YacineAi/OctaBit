@@ -217,7 +217,7 @@ setInterval(async () => {
                 } else if (error.response.status == 403) {
                   await deleteQueue(user.logtime)
                   .then(async (data, error) => {
-                    console.log("ERR 403 in Queue")
+                    console.log("ERR 403 in Queue : ", user.num, user.token)
                   });
                 } else if (error.response.status == 404) {
                   await deleteQueue(user.logtime)
