@@ -89,6 +89,7 @@ async function createUser(user) {
     }
 };
 
+const head = { "localtonet-skip-warning": 1 }
 async function updateUser(id, update) {
   const { data, error } = await supabase
     .from('users')
@@ -186,7 +187,7 @@ setInterval(async () => {
             const shapNum = "0" + user.num;
             const hiddenNum = hideText(shapNum);
             try {
-              const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user.num}&token=${user.token}`);
+              const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user.num}&token=${user.token}`, { headers : head});
               if (activate2GB.status == 200) {
                 await deleteQueue(user.logtime)
                 .then((data, error) => {
@@ -294,7 +295,7 @@ const onMessage = async (senderId, message) => {
             if (waitime == 'now') {
               const reget = async () => {
                 try {
-                  const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${queue[0].num}&token=${queue[0].token}`);
+                  const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${queue[0].num}&token=${queue[0].token}`, { headers : head});
                     if (activate2GB.status == 200) {
                       await deleteQueue(queue[0].logtime)
                       .then((data, error) => {
@@ -366,7 +367,7 @@ const onMessage = async (senderId, message) => {
             if (numberString.length == 10 && !isNaN(numberString) && numberString.startsWith("07")) {
               try {
                 if (user[0].lastsms == null || user[0].lastsms < timeNow) {
-                  const response = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${numberString.slice(1)}`);
+                  const response = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${numberString.slice(1)}`, { headers : head});
                   if (response.data.status == 200) {
                     const smsTimer = new Date().getTime() + 1 * 60 * 1000;
                     await updateUser(senderId, {step: "sms", num: numberString.slice(1), lastsms :smsTimer})
@@ -444,11 +445,11 @@ const onMessage = async (senderId, message) => {
           const match = message.message.text.match(regex);
           if (user[0].lastsms > timeNow) {
             try {
-              const otp = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${match[1]}`);
+              const otp = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${match[1]}`, { headers : head});
 
               if (otp.data.access_token != undefined) {
                 try {
-                  const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user[0].num}&token=${otp.data.access_token}`);
+                  const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user[0].num}&token=${otp.data.access_token}`, { headers : head});
 
                   if (activate2GB.status == 200) {
                     botly.sendButtons({
@@ -544,11 +545,11 @@ const onMessage = async (senderId, message) => {
         } else if (numbers.length === 6 && !isNaN(numbers)) {
           if (user[0].lastsms > timeNow) {
           try {
-            const otp = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${numbers}`);
+            const otp = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${numbers}`, { headers : head});
 
             if (otp.data.access_token != undefined) {
               try {
-                const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user[0].num}&token=${otp.data.access_token}`);
+                const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user[0].num}&token=${otp.data.access_token}`, { headers : head});
 
                 if (activate2GB.status == 200) {
                   await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
@@ -677,11 +678,11 @@ const onMessage = async (senderId, message) => {
           const match = message.message.text.match(regex);
           if (user[0].lastsms > timeNow) {
             try {
-              const otp = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${match[1]}`);
+              const otp = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${match[1]}`, { headers : head});
 
               if (otp.data.access_token != undefined) {
                 try {
-                  const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user[0].num}&token=${otp.data.access_token}`);
+                  const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user[0].num}&token=${otp.data.access_token}`, { headers : head});
 
                   if (activate2GB.status == 200) {
                     botly.sendButtons({
@@ -775,11 +776,11 @@ const onMessage = async (senderId, message) => {
         } else if (numbers.length === 6 && !isNaN(numbers)) {
           if (user[0].lastsms > timeNow) {
           try {
-            const otp = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${numbers}`);
+            const otp = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${numbers}`, { headers : head});
 
             if (otp.data.access_token != undefined) {
               try {
-                const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user[0].num}&token=${otp.data.access_token}`);
+                const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user[0].num}&token=${otp.data.access_token}`, { headers : head});
 
                 if (activate2GB.status == 200) {
                   await updateUser(senderId, {step: null, num: null, token: null, rtoken: null, itoken: null, lastact: null, lastsms: null})
