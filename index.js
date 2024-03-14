@@ -255,7 +255,7 @@ setInterval(async () => {
                     });
                   }
                 } else {
-                  console.log("40x :", error);
+                  console.log("SERVER DOWN");
                 }
               })();
             }
@@ -366,7 +366,7 @@ const onMessage = async (senderId, message) => {
                           });
                         }
                       } else {
-                        console.log("40x :", error);
+                        console.log("SERVER DOWN");
                       }
                     })();
                   }
@@ -388,7 +388,7 @@ const onMessage = async (senderId, message) => {
             if (numberString.length == 10 && !isNaN(numberString) && numberString.startsWith("07")) {
               botly.sendButtons({
                 id: senderId,
-                text: "إضافة ارقام جيزي متوقفة للصيانة الرجاء المحاولة بعد ساعة",
+                text: "إضافة ارقام جيزي متوقفة للصيانة الى وقت آخر الرجاء ارسال ارقام اوريدو فقط",
                 buttons: [
                   botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                 ]});
