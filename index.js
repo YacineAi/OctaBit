@@ -236,7 +236,7 @@ setInterval(async () => {
                   await deleteQueue(user.logtime)
                   .then(async (data, error) => {
                     botly.sendButtons({
-                      id: senderId,
+                      id: user.uid,
                       text: `المستعمل برقم ${hiddenNum}! 🚫\nحدث خطأ في تطبيق جيزي. رجاءا أعد المحاولة الان و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻`,
                       buttons: [
                         botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
@@ -246,7 +246,7 @@ setInterval(async () => {
                   await deleteQueue(user.logtime)
                   .then(async (data, error) => {
                     botly.sendButtons({
-                      id: senderId,
+                      id: user.uid,
                       text: `المستعمل برقم ${hiddenNum}! 🚫\nحدث خطأ حدث خطأ غير معروف. رجاءا راسل المطور 👇🏻`,
                       buttons: [
                         botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
@@ -357,7 +357,7 @@ const onMessage = async (senderId, message) => {
                             buttons: [
                               botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
                             ]});
-                            console.log("40x :", error.response.status);
+                            console.log("40x :", error.response);
                         });
                       }
                     })();
