@@ -221,38 +221,41 @@ setInterval(async () => {
               }
             } catch (error) {
               (async () => {
-                console.log("40x :", error.response);
-                if (error.response.status == 429) {
-                  reget();
-                  console.log("429 in KR");
-                } else if (error.response.status == 401) {
-                  await deleteQueue(user.logtime)
-                  .then(async (data, error) => {
-                    botly.sendText({id: user.uid, text: `المستعمل برقم ${hiddenNum}! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅`});
-                  });
-                } else if (error.response.status == 403) {
-                  reget();
-                  console.log("ERR 403 in Queue RTRY :", user.num, user.token)
-                } else if (error.response.status == 404) {
-                  await deleteQueue(user.logtime)
-                  .then(async (data, error) => {
-                    botly.sendButtons({
-                      id: user.uid,
-                      text: `المستعمل برقم ${hiddenNum}! 🚫\nحدث خطأ في تطبيق جيزي. رجاءا أعد المحاولة الان و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻`,
-                      buttons: [
-                        botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                      ]});
-                  });
+                if (error.response != undefined) {
+                  if (error.response.status == 429) {
+                    reget();
+                    console.log("429 in KR");
+                  } else if (error.response.status == 401) {
+                    await deleteQueue(user.logtime)
+                    .then(async (data, error) => {
+                      botly.sendText({id: user.uid, text: `المستعمل برقم ${hiddenNum}! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅`});
+                    });
+                  } else if (error.response.status == 403) {
+                    reget();
+                    console.log("ERR 403 in Queue RTRY :", user.num, user.token)
+                  } else if (error.response.status == 404) {
+                    await deleteQueue(user.logtime)
+                    .then(async (data, error) => {
+                      botly.sendButtons({
+                        id: user.uid,
+                        text: `المستعمل برقم ${hiddenNum}! 🚫\nحدث خطأ في تطبيق جيزي. رجاءا أعد المحاولة الان و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻`,
+                        buttons: [
+                          botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                        ]});
+                    });
+                  } else {
+                    await deleteQueue(user.logtime)
+                    .then(async (data, error) => {
+                      botly.sendButtons({
+                        id: user.uid,
+                        text: `المستعمل برقم ${hiddenNum}! 🚫\nحدث خطأ حدث خطأ غير معروف. رجاءا راسل المطور 👇🏻`,
+                        buttons: [
+                          botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                        ]});
+                    });
+                  }
                 } else {
-                  await deleteQueue(user.logtime)
-                  .then(async (data, error) => {
-                    botly.sendButtons({
-                      id: user.uid,
-                      text: `المستعمل برقم ${hiddenNum}! 🚫\nحدث خطأ حدث خطأ غير معروف. رجاءا راسل المطور 👇🏻`,
-                      buttons: [
-                        botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                      ]});
-                  });
+                  console.log("40x :", error);
                 }
               })();
             }
@@ -328,39 +331,42 @@ const onMessage = async (senderId, message) => {
                       }
                   } catch (error) {
                     (async () => {
-                      console.log("40x :", error.response);
-                      if (error.response.status == 429) {
-                        console.log("429 now Poz Retrying...");
-                        reget();
-                      } else if (error.response.status == 401) {
-                        await deleteQueue(queue[0].logtime)
-                        .then((data, error) => {
-                          botly.sendText({id: user.uid, text: `المستعمل برقم ${hiddenNum}! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅`});
-                        });
-                      } else if (error.response.status == 403) {
-                        // not supposed to get 403!
-                        console.log("403 now Poz Retrying...");
-                      } else if (error.response.status == 404) {
-                        await deleteQueue(queue[0].logtime)
-                        .then((data, error) => {
-                          botly.sendButtons({
-                            id: senderId,
-                            text: `المستعمل برقم ${hiddenNum}! 🚫\nحدث خطأ في تطبيق جيزي. رجاءا أعد المحاولة الان و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻`,
-                            buttons: [
-                              botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                            ]});
-                        });
+                      if (error.response != undefined) {
+                        if (error.response.status == 429) {
+                          console.log("429 now Poz Retrying...");
+                          reget();
+                        } else if (error.response.status == 401) {
+                          await deleteQueue(queue[0].logtime)
+                          .then((data, error) => {
+                            botly.sendText({id: user.uid, text: `المستعمل برقم ${hiddenNum}! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅`});
+                          });
+                        } else if (error.response.status == 403) {
+                          // not supposed to get 403!
+                          console.log("403 now Poz Retrying...");
+                        } else if (error.response.status == 404) {
+                          await deleteQueue(queue[0].logtime)
+                          .then((data, error) => {
+                            botly.sendButtons({
+                              id: senderId,
+                              text: `المستعمل برقم ${hiddenNum}! 🚫\nحدث خطأ في تطبيق جيزي. رجاءا أعد المحاولة الان و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻`,
+                              buttons: [
+                                botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                              ]});
+                          });
+                        } else {
+                          await deleteQueue(queue[0].logtime)
+                          .then((data, error) => {
+                            botly.sendButtons({
+                              id: senderId,
+                              text: `المستعمل برقم ${hiddenNum}! 🚫\nحدث خطأ حدث خطأ غير معروف. رجاءا راسل المطور 👇🏻`,
+                              buttons: [
+                                botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                              ]});
+                              console.log("40x :", error.response);
+                          });
+                        }
                       } else {
-                        await deleteQueue(queue[0].logtime)
-                        .then((data, error) => {
-                          botly.sendButtons({
-                            id: senderId,
-                            text: `المستعمل برقم ${hiddenNum}! 🚫\nحدث خطأ حدث خطأ غير معروف. رجاءا راسل المطور 👇🏻`,
-                            buttons: [
-                              botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                            ]});
-                            console.log("40x :", error.response);
-                        });
+                        console.log("40x :", error);
                       }
                     })();
                   }
