@@ -16,14 +16,6 @@ const botly = new Botly({
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SB_URL, process.env.SB_KEY, { auth: { persistSession: false} });
 
-// http://41.111.243.134:80
-
-/* ----- ENJOY HBB HAHAHAHAHA ----- */
-
-const httpsAgent = new HttpsProxyAgent(process.env.ALGTELECOMSERVER, { timeout: 10000, rejectUnauthorized: false });
-
-/* ----- YAW 9iW ----- */
-
 /* ----- ESSENTIALS ----- */
 app.use(express.static("public"));
 app.set("view engine", "ejs");
@@ -239,7 +231,7 @@ setInterval(async () => {
             const shapNum = "0" + user.num;
             const hiddenNum = hideText(shapNum);
             try {
-              const activate2GB = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user.num}&token=${user.token}`);
+              const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user.num}&token=${user.token}`, { headers : head});
               if (activate2GB.status == 200) {
                 await updateIzzy(user.num, {last2g: new Date().getTime() + 7 * 24 * 60 * 60 * 1000})
                 .then(async (data, error) => {
@@ -358,7 +350,7 @@ const onMessage = async (senderId, message) => {
             if (waitime == 'now') {
               const reget = async () => {
                 try {
-                  const activate2GB = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${queue[0].num}&token=${queue[0].token}`);
+                  const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${queue[0].num}&token=${queue[0].token}`, { headers : head});
                     if (activate2GB.status == 200) {
                       await updateIzzy(queue[0].num, {last2g: new Date().getTime() + 7 * 24 * 60 * 60 * 1000})
                       .then(async (data, error) => {
@@ -442,7 +434,7 @@ const onMessage = async (senderId, message) => {
             if (izzy[0].last2g != null && izzy[0].last2g < timeNow) { // finished 7 days
               if (izzy[0].time > timeNow) { // token alive
                 try {
-                  const activate2GB = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${numberString.slice(1)}&token=${izzy[0].token}`);
+                  const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${numberString.slice(1)}&token=${izzy[0].token}`, { headers : head});
                   
                   if (activate2GB.status == 200) {
                     await updateIzzy(numberString.slice(1), {last2g: new Date().getTime() + 7 * 24 * 60 * 60 * 1000})
@@ -489,14 +481,14 @@ const onMessage = async (senderId, message) => {
                     } 
               } else { // not soo alive
                 try {
-                  const reToken = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/retoken?old=${izzy[0].rtoken}`);
+                  const reToken = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/retoken?old=${izzy[0].rtoken}`, { headers : head});
 
                   if (reToken.status == 200) {
                     await updateIzzy(numberString.slice(1), {token : reToken.data.access_token, rtoken : reToken.data.refresh_token, time : new Date().getTime() + 14400 * 1000})
                     .then(async (data, error) => {
                       if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                       try {
-                        const activate2GB = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${numberString.slice(1)}&token=${reToken.data.access_token}`);
+                        const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${numberString.slice(1)}&token=${reToken.data.access_token}`, { headers : head});
                         
                         if (activate2GB.status == 200) {
                           await updateIzzy(numberString.slice(1), {last2g: new Date().getTime() + 7 * 24 * 60 * 60 * 1000})
@@ -549,7 +541,7 @@ const onMessage = async (senderId, message) => {
                   if (error.response != undefined) {
                     try {
                       if (user[0].lastsms == null || user[0].lastsms < timeNow) {
-                        const response = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${numberString.slice(1)}`);
+                        const response = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${numberString.slice(1)}`, { headers : head});
                         if (response.data.status == 200) {
                           await updateUser(senderId, {step: "sms", num: numberString.slice(1), lastsms :new Date().getTime() + 1 * 60 * 1000})
                           .then((data, error) => {
@@ -593,7 +585,7 @@ const onMessage = async (senderId, message) => {
               if (izzy[0].last2g == null) { // we dont know if 7 passed
                 if (izzy[0].time > timeNow) { // token alive
                   try {
-                    const activate2GB = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${numberString.slice(1)}&token=${izzy[0].token}`);
+                    const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${numberString.slice(1)}&token=${izzy[0].token}`, { headers : head});
                     
                     if (activate2GB.status == 200) {
                       await updateIzzy(numberString.slice(1), {last2g: new Date().getTime() + 7 * 24 * 60 * 60 * 1000})
@@ -640,14 +632,14 @@ const onMessage = async (senderId, message) => {
                       } 
                 } else { // not soo alive
                   try {
-                    const reToken = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/retoken?old=${izzy[0].rtoken}`);
+                    const reToken = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/retoken?old=${izzy[0].rtoken}`, { headers : head});
   
                     if (reToken.status == 200) {
                       await updateIzzy(numberString.slice(1), {token : reToken.data.access_token, rtoken : reToken.data.refresh_token, time : new Date().getTime() + 14400 * 1000})
                       .then(async (data, error) => {
                         if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                         try {
-                          const activate2GB = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${numberString.slice(1)}&token=${reToken.data.access_token}`);
+                          const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${numberString.slice(1)}&token=${reToken.data.access_token}`, { headers : head});
                           
                           if (activate2GB.status == 200) {
                             await updateIzzy(numberString.slice(1), {last2g: new Date().getTime() + 7 * 24 * 60 * 60 * 1000})
@@ -699,7 +691,7 @@ const onMessage = async (senderId, message) => {
                   } catch (error) {
                     try {
                       if (user[0].lastsms == null || user[0].lastsms < timeNow) {
-                        const response = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${numberString.slice(1)}`);
+                        const response = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${numberString.slice(1)}`, { headers : head});
                         if (response.data.status == 200) {
                           await updateUser(senderId, {step: "sms", num: numberString.slice(1), lastsms :new Date().getTime() + 1 * 60 * 1000})
                           .then((data, error) => {
@@ -743,7 +735,7 @@ const onMessage = async (senderId, message) => {
             if (numberString.length == 10 && !isNaN(numberString) && numberString.startsWith("07")) {
               try {
                 if (user[0].lastsms == null || user[0].lastsms < timeNow) {
-                  const response = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${numberString.slice(1)}`);
+                  const response = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${numberString.slice(1)}`, { headers : head});
                   if (response.data.status == 200) {
                     const smsTimer = new Date().getTime() + 1 * 60 * 1000;
                     await updateUser(senderId, {step: "sms", num: numberString.slice(1), lastsms :smsTimer})
@@ -819,13 +811,13 @@ const onMessage = async (senderId, message) => {
           if (message.message.text.startsWith("Verification Code") || numbers.length === 6 && !isNaN(numbers)) {
             if (user[0].lastsms > timeNow) {
               try {
-                const otp = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${numbers}`);
+                const otp = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${numbers}`, { headers : head});
                 
                 if (otp.data.access_token != undefined) {
                   await createIzzy({num: user[0].num, token : otp.data.access_token, rtoken : otp.data.refresh_token, time : new Date().getTime() + 14400 * 1000, last2g : null})
                   .then(async (data, error) => {
                     try {
-                      const activate2GB = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user[0].num}&token=${otp.data.access_token}`);
+                      const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user[0].num}&token=${otp.data.access_token}`, { headers : head});
                       
                       if (activate2GB.status == 200) {
                         await updateIzzy(user.num, {last2g: new Date().getTime() + 7 * 24 * 60 * 60 * 1000})
@@ -970,13 +962,13 @@ const onMessage = async (senderId, message) => {
           if (message.message.text.startsWith("Verification Code") || numbers.length === 6 && !isNaN(numbers)) {
             if (user[0].lastsms > timeNow) {
               try {
-                const otp = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${numbers}`);
+                const otp = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/verifyotp?num=${user[0].num}&otp=${numbers}`, { headers : head});
                 
                 if (otp.data.access_token != undefined) {
                   await createIzzy({num: user[0].num, token : otp.data.access_token, rtoken : otp.data.refresh_token, time : new Date().getTime() + 14400 * 1000, last2g : null})
                   .then(async (data, error) => {
                     try {
-                      const activate2GB = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user[0].num}&token=${otp.data.access_token}`);
+                      const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user[0].num}&token=${otp.data.access_token}`, { headers : head});
                       
                       if (activate2GB.status == 200) {
                         await updateIzzy(user.num, {last2g: new Date().getTime() + 7 * 24 * 60 * 60 * 1000})
