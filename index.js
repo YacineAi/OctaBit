@@ -460,27 +460,31 @@ const onMessage = async (senderId, message) => {
                     }
                   } catch (error) {
                     (async () => {
-                      if (error.response.status == 429) {
-                        botly.sendText({id: senderId, text: "خطأ 429 ⚠️\nأعد كتابة الرقم مرة أخرى 🔁📱"});
-                      } else if (error.response.status == 401) {
-                        botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
-                      } else if (error.response.status == 403) {
-                        botly.sendText({id: senderId, text: "خطأ 403 ⚠️\nأعد كتابة الرقم مرة أخرى 🔁📱"});
-                      } else if (error.response.status == 404) {
-                        botly.sendButtons({
-                          id: senderId,
-                          text: "حدث خطأ في تطبيق جيزي. رجاءا أعد المحاولة بعد وقت و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
-                          buttons: [
-                            botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                          ]});
+                      if (error.response != undefined) {
+                        if (error.response.status == 429) {
+                          botly.sendText({id: senderId, text: "الكثير من الطلبات 😞\nأعد كتابة الرقم بعد ثواني 📲."});
+                        } else if (error.response.status == 401) {
+                          botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
+                        } else if (error.response.status == 403) {
+                          botly.sendText({id: senderId, text: "غير جاهز 🫤\nأعد كتابة الرقم بعد 30 دقيقة 📲."});
+                        } else if (error.response.status == 404) {
+                          botly.sendButtons({
+                            id: senderId,
+                            text: "حدث خطأ في تطبيق جيزي. رجاءا أعد المحاولة بعد وقت و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
+                            buttons: [
+                              botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                            ]});
+                        } else {
+                          botly.sendButtons({
+                            id: senderId,
+                            text: "حدث خطأ غير معروف. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
+                            buttons: [
+                              botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                            ]});
+                          }
                       } else {
-                        botly.sendButtons({
-                          id: senderId,
-                          text: "حدث خطأ غير معروف. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
-                          buttons: [
-                            botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                          ]});
-                        }
+                        botly.sendText({id: senderId, text: "خطأ في السيرفر 💻\nأعد كتابة الرقم بعد ثواني 📲."});
+                      }
                       })();
                     } 
               } else { // not soo alive
@@ -510,27 +514,31 @@ const onMessage = async (senderId, message) => {
                           }
                         } catch (error) {
                           (async () => {
-                            if (error.response.status == 429) {
-                              botly.sendText({id: senderId, text: "خطأ 429 ⚠️\nأعد كتابة الرقم مرة أخرى 🔁📱"});
-                            } else if (error.response.status == 401) {
-                              botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
-                            } else if (error.response.status == 403) {
-                              botly.sendText({id: senderId, text: "خطأ 403 ⚠️\nأعد كتابة الرقم مرة أخرى 🔁📱"});
-                            } else if (error.response.status == 404) {
-                              botly.sendButtons({
-                                id: senderId,
-                                text: "حدث خطأ في تطبيق جيزي. رجاءا أعد المحاولة بعد وقت و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
-                                buttons: [
-                                  botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                                ]});
+                            if (error.response != undefined) {
+                              if (error.response.status == 429) {
+                                botly.sendText({id: senderId, text: "الكثير من الطلبات 😞\nأعد كتابة الرقم بعد ثواني 📲."});
+                              } else if (error.response.status == 401) {
+                                botly.sendText({id: senderId, text: "حدث خطأ! 🤕\nيبدو أنك إستعملت الخدمة هذا الاسبوع يرجى إنتظار ايام حتى يمكنك إعادة تفعيل الخدمة ✅"});
+                              } else if (error.response.status == 403) {
+                                botly.sendText({id: senderId, text: "غير جاهز 🫤\nأعد كتابة الرقم بعد 30 دقيقة 📲."});
+                              } else if (error.response.status == 404) {
+                                botly.sendButtons({
+                                  id: senderId,
+                                  text: "حدث خطأ في تطبيق جيزي. رجاءا أعد المحاولة بعد وقت و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
+                                  buttons: [
+                                    botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                                  ]});
+                              } else {
+                                botly.sendButtons({
+                                  id: senderId,
+                                  text: "حدث خطأ غير معروف. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
+                                  buttons: [
+                                    botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                                  ]});
+                                }
                             } else {
-                              botly.sendButtons({
-                                id: senderId,
-                                text: "حدث خطأ غير معروف. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
-                                buttons: [
-                                  botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                                ]});
-                              }
+                              botly.sendText({id: senderId, text: "خطأ في السيرفر 💻\nأعد كتابة الرقم بعد ثواني 📲."});
+                            }
                             })();
                           } 
                     });
@@ -538,43 +546,47 @@ const onMessage = async (senderId, message) => {
                     //
                   }
                 } catch (error) {
-                  try {
-                    if (user[0].lastsms == null || user[0].lastsms < timeNow) {
-                      const response = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${numberString.slice(1)}`);
-                      if (response.data.status == 200) {
-                        await updateUser(senderId, {step: "sms", num: numberString.slice(1), lastsms :new Date().getTime() + 1 * 60 * 1000})
-                        .then((data, error) => {
-                          if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                          botly.sendText({id: senderId, text: "تم إرسال الرمز إلى الرقم 💬\nيرجى نسخ الرسالة 📋 أو كتابة الارقام التي وصلتك 🔢"});
-                        });
+                  if (error.response != undefined) {
+                    try {
+                      if (user[0].lastsms == null || user[0].lastsms < timeNow) {
+                        const response = await axios.get(`http://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${numberString.slice(1)}`);
+                        if (response.data.status == 200) {
+                          await updateUser(senderId, {step: "sms", num: numberString.slice(1), lastsms :new Date().getTime() + 1 * 60 * 1000})
+                          .then((data, error) => {
+                            if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                            botly.sendText({id: senderId, text: "تم إرسال الرمز إلى الرقم 💬\nيرجى نسخ الرسالة 📋 أو كتابة الارقام التي وصلتك 🔢"});
+                          });
+                        } else {
+                          console.log(response.data)
+                        }
                       } else {
-                        console.log(response.data)
-                      }
-                    } else {
-                  botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
-                }
-              } catch (error) {
-                console.log(error)
-                  if (error.response.status == 429) {
-                    botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا ثم أعد كتابة رقمك..."});
-                  } else if (error.response.status == 400) {
-                    botly.sendText({id: senderId, text: "الرقم الذي أدخلته غير موجود"});
-                  } else if (error.response.status == 404) {
-                    botly.sendButtons({
-                      id: senderId,
-                      text: "حدث خطأ في تطبيق جيزي. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
-                      buttons: [
-                        botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                      ]});
-                  } else {
-                    botly.sendButtons({
-                      id: senderId,
-                      text: "حدث خطأ غير معروف. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
-                      buttons: [
-                        botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
-                      ]});
+                    botly.sendText({id: senderId, text: "انتظر قليلا حتى يمكنك ارسال رمز جديد"});
                   }
-                }
+                } catch (error) {
+                  console.log(error)
+                    if (error.response.status == 429) {
+                      botly.sendText({id: senderId, text: "4⃣2️⃣9️⃣❗\nالكثير من الطلبات 😷 يرجى الانتظار قليلا ثم أعد كتابة رقمك..."});
+                    } else if (error.response.status == 400) {
+                      botly.sendText({id: senderId, text: "الرقم الذي أدخلته غير موجود"});
+                    } else if (error.response.status == 404) {
+                      botly.sendButtons({
+                        id: senderId,
+                        text: "حدث خطأ في تطبيق جيزي. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
+                        buttons: [
+                          botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                        ]});
+                    } else {
+                      botly.sendButtons({
+                        id: senderId,
+                        text: "حدث خطأ غير معروف. رجاءا أعد المحاولة و إذا تابع هذا الخطأ في الظهور راسل المطور 👇🏻",
+                        buttons: [
+                          botly.createWebURLButton("حساب المبرمج 💻👤", "facebook.com/0xNoti/")
+                        ]});
+                    }
+                  }
+                  } else {
+                    botly.sendText({id: senderId, text: "خطأ في السيرفر 💻\nأعد كتابة الرقم بعد ثواني 📲."});
+                  }
                 }
               }
             } else { 
