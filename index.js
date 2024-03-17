@@ -704,13 +704,13 @@ const onMessage = async (senderId, message) => {
                 }
               }
             } else {
-              if (numberString.length == 10 && !isNaN(numberString) && numberString.startsWith("07")) {
+              if (phone.length == 9 && !isNaN(phone) && phone.startsWith("7")) {
                 try {
                   if (user[0].lastsms == null || user[0].lastsms < timeNow) {
-                    const response = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${numberString.slice(1)}`, { headers : head});
+                    const response = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${phone}`, { headers : head});
                     if (response.data.status == 200) {
                       const smsTimer = new Date().getTime() + 1 * 60 * 1000;
-                      await updateUser(senderId, {step: "sms", num: numberString.slice(1), lastsms :smsTimer})
+                      await updateUser(senderId, {step: "sms", num: phone, lastsms :smsTimer})
                       .then((data, error) => {
                         if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                         botly.sendText({id: senderId, text: "تم إرسال الرمز إلى الرقم 💬\nيرجى نسخ الرسالة 📋 أو كتابة الارقام التي وصلتك 🔢"});
@@ -746,13 +746,13 @@ const onMessage = async (senderId, message) => {
                 botly.sendText({id: senderId, text: "خطأ في السيرفر 💻\nأعد كتابة الرقم بعد لحظات 📲."});
               }
             }
-            } else if (numberString.length == 10 && !isNaN(numberString) && numberString.startsWith("05")) {
+            } else if (phone.length == 9 && !isNaN(phone) && phone.startsWith("5")) {
               try {
                 if (user[0].lastsms == null || user[0].lastsms < timeNow) {
-                  const response = await axios.get(`https://${process.env.OREDSERV}/sendotp?num=${numberString.slice(1)}`);
+                  const response = await axios.get(`https://${process.env.OREDSERV}/sendotp?num=${phone}`);
                   if (response.data.status == "ok") {
                     const smsTimer = new Date().getTime() + 5 * 60 * 1000;
-                    await updateUser(senderId, {step: "smsOoredoo", num: numberString.slice(1), lastsms :smsTimer})
+                    await updateUser(senderId, {step: "smsOoredoo", num: phone, lastsms :smsTimer})
                     .then((data, error) => {
                       if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
                       botly.sendText({id: senderId, text: "تم إرسال الرمز إلى الرقم 💬\nيرجى نسخ الرسالة 📋 أو كتابة الارقام التي وصلتك 🔢"});
