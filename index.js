@@ -866,6 +866,7 @@ const onMessage = async (senderId, message) => {
                                   });
                                 }
                             } else {   
+                              console.log("LOG :", error);
                               botly.sendText({id: senderId, text: "خطأ من الخادم 😞\nأعد كتابة الرمز بعد ثواني 📲."});            
                             }
                             })();
