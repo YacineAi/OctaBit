@@ -866,11 +866,7 @@ const onMessage = async (senderId, message) => {
                                   });
                                 }
                             } else {   
-                              await updateUser(senderId, {step: "429", token : otp.data.access_token})
-                                .then((data, error) => {
-                                  if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
-                                  botly.sendText({id: senderId, text: "الكثير من الطلبات 😞\nأعد كتابة الرمز بعد ثواني 📲."});
-                                });             
+                              botly.sendText({id: senderId, text: "خطأ من الخادم 😞\nأعد كتابة الرمز بعد ثواني 📲."});            
                             }
                             })();
                           } 
