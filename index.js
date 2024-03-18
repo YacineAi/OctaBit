@@ -896,6 +896,7 @@ const onMessage = async (senderId, message) => {
                           console.log("other err: ", error.response.status)
                         }
                       } else {
+                        console.log("OTP ETR :", error);
                         botly.sendText({id: senderId, text: "خطأ في السيرفر 💻\nأعد كتابة الرمز بعد ثواني 📲."});
                       }
                     }
