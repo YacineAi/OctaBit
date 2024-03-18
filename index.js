@@ -137,7 +137,7 @@ async function deleteIzzy(num) {
   const { data, error } = await supabase
       .from('djezzy')
       .delete()
-      .eq('num', uid)
+      .eq('num', num)
   
     if (error) {
       throw new Error('Error creating user : ', error);
