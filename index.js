@@ -675,6 +675,8 @@ const onMessage = async (senderId, message) => {
                         //
                       }
                     } catch (error) {
+                      await deleteIzzy(izzy[0].num)
+                    .then(async (data, error) => {
                       try {
                         if (user[0].lastsms == null || user[0].lastsms < timeNow) {
                           const response = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${phone}`, { headers : head});
@@ -715,6 +717,7 @@ const onMessage = async (senderId, message) => {
                       botly.sendText({id: senderId, text: "خطأ في السيرفر 💻\nأعد كتابة الرقم بعد ثواني 📲."});
                     }
                   }
+                });
                 }
               }
                 } else {
