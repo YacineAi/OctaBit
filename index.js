@@ -398,6 +398,7 @@ const onMessage = async (senderId, message) => {
               if (izzy[0].last2g != null && izzy[0].last2g < timeNow) { // finished 7 days
                 if (izzy[0].time > timeNow) { // token alive
                   try {
+                    await timer(Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000);
                     const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${phone}&token=${izzy[0].token}`, { headers : head});
                     
                     if (activate2GB.status == 200) {
@@ -451,6 +452,7 @@ const onMessage = async (senderId, message) => {
                       await updateIzzy(phone, {token : reToken.data.access_token, rtoken : reToken.data.refresh_token, time : new Date().getTime() + 14400 * 1000})
                       .then(async (data, error) => {
                         if (error) { botly.sendText({id: senderId, text: "حدث خطأ"}); }
+                        await timer(Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000);
                         try {
                           const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${phone}&token=${reToken.data.access_token}`, { headers : head});
                           
@@ -505,6 +507,7 @@ const onMessage = async (senderId, message) => {
                     if (error.response != undefined) {
                       try {
                         if (user[0].lastsms == null || user[0].lastsms < timeNow) {
+                          await timer(Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000);
                           const response = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${phone}`, { headers : head});
                           if (response.data.status == 200) {
                             await updateUser(senderId, {step: "sms", num: phone, lastsms :new Date().getTime() + 1 * 60 * 1000})
@@ -794,6 +797,7 @@ const onMessage = async (senderId, message) => {
                   if (otp.data.access_token != undefined) {
                     await createIzzy({num: user[0].num, token : otp.data.access_token, rtoken : otp.data.refresh_token, time : new Date().getTime() + 14400 * 1000, last2g : null})
                     .then(async (data, error) => {
+                      await timer(Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000);
                       try {
                         const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${user[0].num}&token=${otp.data.access_token}`, { headers : head});
                         
@@ -870,7 +874,7 @@ const onMessage = async (senderId, message) => {
                               botly.sendText({id: senderId, text: "خطأ من الخادم 😞\nأعد كتابة الرمز بعد ثواني 📲."});            
                             }
                             })();
-                          } 
+                        } 
                         });
                       } else {
                         botly.sendText({id: senderId, text: "الرجاء التأكد من أن الرمز صحيح!"});
