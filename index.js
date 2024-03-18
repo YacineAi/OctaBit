@@ -411,7 +411,6 @@ const onMessage = async (senderId, message) => {
               if (izzy[0].last2g != null && izzy[0].last2g < timeNow) { // finished 7 days
                 if (izzy[0].time > timeNow) { // token alive
                   try {
-                    await timer(Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000);
                     const activate2GB = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/2g?num=${phone}&token=${izzy[0].token}`, { headers : head});
                     
                     if (activate2GB.status == 200) {
@@ -522,7 +521,6 @@ const onMessage = async (senderId, message) => {
                       if (error.response != undefined) {
                         try {
                           if (user[0].lastsms == null || user[0].lastsms < timeNow) {
-                            await timer(Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000);
                             const response = await axios.get(`https://${servers[Math.floor(Math.random() * servers.length)]}/sendotp?num=${phone}`, { headers : head});
                             if (response.data.status == 200) {
                               await updateUser(senderId, {step: "sms", num: phone, lastsms :new Date().getTime() + 1 * 60 * 1000})
